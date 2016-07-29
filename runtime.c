@@ -1,27 +1,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
-typedef struct
-{
-  void* a;
-  void* b;
-} Array;
-
-typedef int (*MainFunc)(Array a);
-
-uint32_t _d_run_main(uint32_t argc, uint8_t** argv, uint8_t* ptr)
-{
-  Array a;
-  MainFunc entryPoint = (MainFunc)ptr;
-  printf("_d_run_main: %p\n", ptr);
-  entryPoint(a);
-}
-
-void _d_assert_msg()
-{
-}
-
+// make link work. will most probably crash if actually used during runtime.
 int _d_dso_registry;
+int _d_assert_msg;
 
 void startup();
 void mainLoop();
