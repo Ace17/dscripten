@@ -5,19 +5,19 @@ all: $(BIN)/full.exe $(BIN)/full.html
 clean:
 	rm -rf $(BIN)
 
-$(BIN)/full.exe: $(BIN)/full.cbe.c runtime.c
+$(BIN)/full.exe: $(BIN)/full.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
-	gcc -O3 -I. -w $^ -o "$@" -lSDL -lSDL_gfx
+	gcc -O3 -Irt -w $^ -o "$@" -lSDL -lSDL_gfx
 
-$(BIN)/full.html: $(BIN)/full.cbe.c runtime.c
+$(BIN)/full.html: $(BIN)/full.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
-	emcc -O3 -I. -w $^ -o "$@" -lSDL -lSDL_gfx
+	emcc -O3 -Irt -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
-	ldc2 $< -c -output-bc -of$@
+	ldc2 -Isrc $< -c -output-bc -of$@
 
-$(BIN)/full.bc: $(BIN)/main.bc $(BIN)/vec.bc
+$(BIN)/full.bc: $(BIN)/src/main.bc $(BIN)/src/vec.bc
 	@mkdir -p $(dir $@)
 	llvm-link -o "$@" $^
 
