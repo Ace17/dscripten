@@ -17,7 +17,7 @@ $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
 	ldc2 $< -c -output-bc -of$@
 
-$(BIN)/full.bc: $(BIN)/hello.bc $(BIN)/lib.bc
+$(BIN)/full.bc: $(BIN)/main.bc $(BIN)/vec.bc
 	@mkdir -p $(dir $@)
 	llvm-link -o "$@" $^
 

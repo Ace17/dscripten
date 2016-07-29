@@ -1,4 +1,4 @@
-import lib;
+import vec;
 import core.stdc.stdio;
 
 SDL_Surface* screen;
