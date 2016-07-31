@@ -36,7 +36,7 @@ function buildLdc
   fi
 
   if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
-    git clone --depth=1 -b master --single-branch https://github.com/JuliaComputing/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
+    git clone --depth=1 -b forwardDeclare --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
   fi
 
   mkdir -p $tmpDir/bin/llvm
