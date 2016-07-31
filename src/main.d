@@ -15,11 +15,14 @@ SDL_Surface* screen;
 
 extern(C) void quit();
 
+enum WIDTH = 640;
+enum HEIGHT = 480;
+
 extern(C)
 void startup()
 {
   SDL_Init(SDL_INIT_EVERYTHING);
-  screen = SDL_SetVideoMode(640, 480, 32, 0);
+  screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, 0);
   printf("Keys: WASD\n");
   game.init();
 }
@@ -59,10 +62,10 @@ game.Command processInput()
 
 void drawScreen()
 {
-  SDL_FillRect(screen, null, 0x20202020);
+  boxRGBA(screen, 0, 0, WIDTH, HEIGHT, 128, 224, 255, 64);
   int size = 10;
-  uint color = game.firing ? 0xFFFFFFFF : 0xCCCCCCCC;
-  boxColor(screen, game.pos.x-size/2, game.pos.y-size/2, game.pos.x+size, game.pos.y+size, color);
+  uint color = game.firing ? 255 : 0;
+  boxRGBA(screen, game.pos.x-size/2, game.pos.y-size/2, game.pos.x+size, game.pos.y+size, 255, 255-color, 0, 255);
   SDL_Flip(screen);
 }
 

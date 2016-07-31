@@ -3739,3 +3739,4 @@ static ~this()
 
 // SDL_gfx
 void boxColor(SDL_Surface* s, int x1, int y1, int x2, int x2, uint c);
+void boxRGBA(SDL_Surface* s, int x1, int y1, int x2, int x2, int r, int g, int b, int a);
