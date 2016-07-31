@@ -7,11 +7,11 @@ clean:
 
 $(BIN)/full.exe: $(BIN)/full.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
-	gcc -O3 -Irt -w $^ -o "$@" -lSDL -lSDL_gfx
+	gcc -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/full.html: $(BIN)/full.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
-	emcc -O3 -Irt -w $^ -o "$@" -lSDL -lSDL_gfx
+	emcc -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
@@ -25,4 +25,5 @@ $(BIN)/%.cbe.c: $(BIN)/%.bc
 	@mkdir -p $(dir $@)
 	llvm-dis "$<" -o="$(BIN)/$*.ll"
 	llvm-cbe "$(BIN)/$*.ll" -o="$@"
+	@sed -i 's/^#include <APInt-C\.h>//' "$@"
 
