@@ -29,14 +29,17 @@ function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
     git clone --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
+    # runFrom $tmpDir/ldc git checkout 'be63398346f395814ddc73546e66821888c2fffd'
   fi
 
   if [ ! -d $tmpDir/llvm ] ; then
     git clone --depth=1 -b release_37 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
+    # runFrom $tmpDir/llvm git checkout '33c352b3eda89abc24e7511d9045fa2e499a42e3'
   fi
 
   if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
     git clone --depth=1 -b forwardDeclare --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
+    # runFrom $tmpDir/llvm/projects/llvm-cbe 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
   fi
 
   mkdir -p $tmpDir/bin/llvm
@@ -60,16 +63,19 @@ function buildEmscripten
   # emcc and other python wrappers
   if [ ! -d $PREFIX_EMS ] ; then
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
+    # runFrom $PREFIX_EMS git checkout '07b87426f898d6e9c677db291d9088c839197291'
   fi
 
   # the asmjs backend
   if [ ! -d $tmpDir/emscripten-llvm ] ; then
     git clone --depth=1 -b master --single-branch git@github.com:kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
+    # runFrom $tmpDir/emscripten-llvm git checkout '61acfb230665464544f2e8db292f8999fc3c628c'
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
   if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
     git clone --depth=1 -b master --single-branch git@github.com:kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
+    # runFrom $tmpDir/emscripten-llvm/tools/clang git checkout '271ce598c3d1fe74efadc254f5be1b57edea9f41'
   fi
 
   mkdir -p $tmpDir/bin/emscripten-llvm
