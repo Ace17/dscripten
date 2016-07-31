@@ -13,7 +13,7 @@ static int mustQuit;
 
 #ifdef __EMSCRIPTEN__
 
-void emscripten_set_main_loop(void function(), int fps, int simulate_infinite_loop);
+void emscripten_set_main_loop(void (*function)(), int fps, int simulate_infinite_loop);
 
 int main()
 {

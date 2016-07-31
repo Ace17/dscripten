@@ -1,17 +1,14 @@
 BIN?=bin
+EXT?=exe
 
-all: $(BIN)/full.exe $(BIN)/full.html
+all: $(BIN)/full.$(EXT)
 
 clean:
 	rm -rf $(BIN)
 
-$(BIN)/full.exe: $(BIN)/full.cbe.c rt/runtime.c
+$(BIN)/full.$(EXT): $(BIN)/full.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
-	gcc -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
-
-$(BIN)/full.html: $(BIN)/full.cbe.c rt/runtime.c
-	@mkdir -p $(dir $@)
-	emcc -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
+	$(CC) -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)

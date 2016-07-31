@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+export BIN="bin/asmjs"
+export EXT="html"
+export CC="emcc"
+
+make -j`nproc`
+
