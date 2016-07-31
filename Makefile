@@ -14,7 +14,11 @@ $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
 	ldc2 -boundscheck=off -Isrc $< -c -output-bc -of$@
 
-$(BIN)/full.bc: $(BIN)/src/main.bc $(BIN)/src/vec.bc $(BIN)/src/minirt.bc
+$(BIN)/full.bc: \
+	$(BIN)/src/main.bc \
+	$(BIN)/src/game.bc \
+	$(BIN)/src/vec.bc \
+	$(BIN)/src/minirt.bc
 	@mkdir -p $(dir $@)
 	llvm-link -o "$@" $^
 

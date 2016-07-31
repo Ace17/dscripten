@@ -1,24 +1,19 @@
-pragma (LDC_no_moduleinfo);
-pragma (LDC_no_typeinfo);
+/*
+ * Copyright (C) 2016 - Sebastien Alaiwan
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ */
+import core.stdc.stdio;
 
 import sdl;
 import vec;
-import core.stdc.stdio;
-import minirt;
+import game;
 
 SDL_Surface* screen;
 
-Vec2 pos;
-Vec2 vel;
-
 enum SPEED = 30;
-
-enum COLOR
-{
-  RED,
-  GREEN,
-  BLUE,
-}
 
 extern(C) void quit();
 
@@ -27,29 +22,28 @@ void startup()
 {
   SDL_Init(SDL_INIT_EVERYTHING);
   screen = SDL_SetVideoMode(640, 480, 32, 0);
-  pos = Vec2(100, 100);
-  auto c = COLOR.GREEN;
-  printf("%s\n", enumToString(c).ptr);
-  printf("Init OK\n");
   printf("Keys: WASD\n");
+  init();
 }
 
 extern(C)
 void mainLoop()
 {
-  processInput();
-  update();
-  draw();
+  auto cmd = processInput();
+  update(cmd);
+  drawScreen();
 }
 
-void processInput()
+Vec2 processInput()
 {
   SDL_PumpEvents();
   auto keyboard = SDL_GetKeyState(null);
   if(keyboard[SDLK_ESCAPE])
     quit();
+  if(keyboard[SDLK_F2])
+    init();
 
-  Vec2 desiredVel = vel;
+  Vec2 desiredVel;
   if(keyboard[SDLK_a])
     desiredVel.x += -SPEED;
   if(keyboard[SDLK_d])
@@ -59,27 +53,10 @@ void processInput()
   if(keyboard[SDLK_s])
     desiredVel.y += +SPEED;
 
-  vel = desiredVel;
+  return desiredVel;
 }
 
-void update()
-{
-  if(pos.x < 0)
-    vel.x = abs(vel.x);
-  if(pos.x > 640)
-    vel.x = -abs(vel.x);
-
-  if(pos.y < 0)
-    vel.y = abs(vel.y);
-  if(pos.y > 480)
-    vel.y = -abs(vel.y);
-
-  pos += vel / 10;
-  vel *= 9;
-  vel /= 10;
-}
-
-void draw()
+void drawScreen()
 {
   SDL_FillRect(screen, null, 0x80808080);
   boxColor(screen, pos.x, pos.y, pos.x+10, pos.y+10, 0xFFFFFFFF);
