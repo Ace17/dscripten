@@ -8,7 +8,9 @@
 
 set -euo pipefail
 
-readonly PREFIX=/tmp/toolchains/emsd
+readonly PREFIX_NAT=/tmp/toolchains/llvm-native
+readonly PREFIX_JS=/tmp/toolchains/llvm-js
+readonly PREFIX_EMS=/tmp/toolchains/emscripten
 readonly tmpDir=/tmp/emsd-source
 
 function main
@@ -38,13 +40,13 @@ function buildLdc
   fi
 
   mkdir -p $tmpDir/bin/llvm
-  runFrom $tmpDir/bin/llvm ../../llvm/configure --enable-targets=host --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --prefix=$PREFIX
+  runFrom $tmpDir/bin/llvm ../../llvm/configure --enable-targets=host --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --prefix=$PREFIX_NAT
   runFrom $tmpDir/bin/llvm make -j`nproc`
   runFrom $tmpDir/bin/llvm make -j`nproc` install
-  cp $tmpDir/bin/llvm/Release/bin/llvm-cbe $PREFIX/bin
+  cp $tmpDir/bin/llvm/Release/bin/llvm-cbe $PREFIX_NAT/bin
 
   mkdir -p $tmpDir/bin/ldc
-  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "LLVM_CONFIG=$PREFIX/bin/llvm-config" -D "CMAKE_INSTALL_PREFIX=$PREFIX" ../../ldc
+  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config" -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" ../../ldc
   runFrom $tmpDir/bin/ldc make -j`nproc`
   runFrom $tmpDir/bin/ldc make -j`nproc` install
 }
@@ -56,8 +58,8 @@ function buildLdc
 function buildEmscripten
 {
   # emcc and other python wrappers
-  if [ ! -d $tmpDir/emscripten ] ; then
-    git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $tmpDir/emscripten
+  if [ ! -d $PREFIX_EMS ] ; then
+    git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
   fi
 
   # the asmjs backend
@@ -71,7 +73,7 @@ function buildEmscripten
   fi
 
   mkdir -p $tmpDir/bin/emscripten-llvm
-  runFrom $tmpDir/bin/emscripten-llvm ../../emscripten-llvm/configure --enable-targets=host,js --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --disable-docs --prefix=$PREFIX/emscripten
+  runFrom $tmpDir/bin/emscripten-llvm ../../emscripten-llvm/configure --enable-targets=host,js --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --disable-docs --prefix=$PREFIX_JS
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc`
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc` install
 }
