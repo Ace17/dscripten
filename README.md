@@ -12,6 +12,11 @@ Purpose
   This is a demonstration on how D code can be compiled to Javascript using
   a combination of existing tools.
 
+Demo
+====
+
+  You can try an online demo here: http://code.alaiwan.org/dscripten/full.html
+
 Usage
 -----
 
@@ -52,10 +57,10 @@ Usage
 
   If the llvm-config don't appear in this order, emcc will not work.
 
-* Run make
+* Run the build script (it just sets some variables before calling the makefile)
 
   ```
-  $ make
+  $ ./build_asmjs
   ```
 
   (If it fails, try removing ~/.emscripten (or setting EM_CONFIG to anything else))
@@ -63,6 +68,13 @@ Usage
 * Enjoy the result:
 
   ```
-  $ firefox bin/full.html
+  $ firefox bin/asmjs/full.html
+  ```
+
+* You can also play the native version:
+
+  ```
+  $ ./build_native
+  $ ./bin/native/full.exe
   ```
 
