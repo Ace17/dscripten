@@ -21,13 +21,21 @@ struct Vec2
     y *= val;
   }
 
+  Vec2 opMul(T)(T val) const
+  {
+    Vec2 r = this;
+    r.x *= val;
+    r.y *= val;
+    return r;
+  }
+
   void opDivAssign(T)(T val)
   {
     x /= val;
     y /= val;
   }
 
-  Vec2 opDiv(T)(T val)
+  Vec2 opDiv(T)(T val) const
   {
     Vec2 r = this;
     r.x /= val;

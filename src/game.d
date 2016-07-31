@@ -13,6 +13,8 @@ import minirt;
 Vec2 pos;
 Vec2 vel;
 
+enum SPEED = 30;
+
 void init()
 {
   enum COLOR
@@ -31,7 +33,7 @@ void init()
 
 void update(Vec2 cmd)
 {
-  vel += cmd;
+  vel += cmd * SPEED;
   if(pos.x < 0)
     vel.x = abs(vel.x);
   if(pos.x > 640)

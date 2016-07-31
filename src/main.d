@@ -13,8 +13,6 @@ import game;
 
 SDL_Surface* screen;
 
-enum SPEED = 30;
-
 extern(C) void quit();
 
 extern(C)
@@ -43,17 +41,17 @@ Vec2 processInput()
   if(keyboard[SDLK_F2])
     init();
 
-  Vec2 desiredVel;
+  Vec2 cmd;
   if(keyboard[SDLK_a])
-    desiredVel.x += -SPEED;
+    cmd.x += -1;
   if(keyboard[SDLK_d])
-    desiredVel.x += +SPEED;
+    cmd.x += +1;
   if(keyboard[SDLK_w])
-    desiredVel.y += -SPEED;
+    cmd.y += -1;
   if(keyboard[SDLK_s])
-    desiredVel.y += +SPEED;
+    cmd.y += +1;
 
-  return desiredVel;
+  return cmd;
 }
 
 void drawScreen()
