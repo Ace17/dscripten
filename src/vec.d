@@ -19,6 +19,14 @@ struct Vec2
     x /= val;
     y /= val;
   }
+
+  Vec2 opDiv(T)(T val)
+  {
+    Vec2 r = this;
+    r.x /= val;
+    r.y /= val;
+    return r;
+  }
 }
 
 auto abs(T)(T val)

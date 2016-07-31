@@ -11,7 +11,8 @@ SDL_Surface* screen;
 Vec2 pos;
 Vec2 vel;
 
-enum SPEED = 3;
+enum SPEED = 30;
+
 enum COLOR
 {
   RED,
@@ -24,13 +25,13 @@ extern(C) void quit();
 extern(C)
 void startup()
 {
-  SDL_Init(SDL_INIT_VIDEO);
+  SDL_Init(SDL_INIT_EVERYTHING);
   screen = SDL_SetVideoMode(640, 480, 32, 0);
   pos = Vec2(100, 100);
-  vel = Vec2(SPEED, SPEED);
-  printf("Init OK\n");
   auto c = COLOR.GREEN;
   printf("%s\n", enumToString(c).ptr);
+  printf("Init OK\n");
+  printf("Keys: WASD\n");
 }
 
 extern(C)
@@ -73,7 +74,7 @@ void update()
   if(pos.y > 480)
     vel.y = -abs(vel.y);
 
-  pos += vel;
+  pos += vel / 10;
   vel *= 9;
   vel /= 10;
 }
