@@ -1,5 +1,10 @@
+pragma (LDC_no_moduleinfo);
+pragma (LDC_no_typeinfo);
+
+import sdl;
 import vec;
 import core.stdc.stdio;
+import minirt;
 
 SDL_Surface* screen;
 
@@ -7,6 +12,14 @@ Vec2 pos;
 Vec2 vel;
 
 enum SPEED = 3;
+enum COLOR
+{
+  RED,
+  GREEN,
+  BLUE,
+}
+
+extern(C) void quit();
 
 extern(C)
 void startup()
@@ -16,49 +29,59 @@ void startup()
   pos = Vec2(100, 100);
   vel = Vec2(SPEED, SPEED);
   printf("Init OK\n");
+  auto c = COLOR.GREEN;
+  printf("%s\n", enumToString(c).ptr);
 }
 
 extern(C)
 void mainLoop()
 {
+  processInput();
   update();
   draw();
+}
+
+void processInput()
+{
+  SDL_PumpEvents();
+  auto keyboard = SDL_GetKeyState(null);
+  if(keyboard[SDLK_ESCAPE])
+    quit();
+
+  Vec2 desiredVel = vel;
+  if(keyboard[SDLK_a])
+    desiredVel.x += -SPEED;
+  if(keyboard[SDLK_d])
+    desiredVel.x += +SPEED;
+  if(keyboard[SDLK_w])
+    desiredVel.y += -SPEED;
+  if(keyboard[SDLK_s])
+    desiredVel.y += +SPEED;
+
+  vel = desiredVel;
 }
 
 void update()
 {
   if(pos.x < 0)
-    vel.x = SPEED;
+    vel.x = abs(vel.x);
   if(pos.x > 640)
-    vel.x = -SPEED;
+    vel.x = -abs(vel.x);
 
   if(pos.y < 0)
-    vel.y = SPEED;
+    vel.y = abs(vel.y);
   if(pos.y > 480)
-    vel.y = -SPEED;
+    vel.y = -abs(vel.y);
 
   pos += vel;
+  vel *= 9;
+  vel /= 10;
 }
 
 void draw()
 {
   SDL_FillRect(screen, null, 0x80808080);
   boxColor(screen, pos.x, pos.y, pos.x+10, pos.y+10, 0xFFFFFFFF);
-
   SDL_Flip(screen);
 }
 
-// SDL imports
-extern(C)
-{
-  void boxColor(SDL_Surface* s, int x1, int y1, int x2, int x2, uint c);
-  int SDL_Init(uint flags);
-  const uint SDL_INIT_VIDEO		= 0x00000020;
-  SDL_Surface* SDL_SetVideoMode(int width, int height, int bpp, uint flags);
-  int SDL_FillRect (SDL_Surface *dst, SDL_Rect *dstrect, uint color);
-  int SDL_Flip(SDL_Surface *screen);
-
-  alias SDL_Surface = void;
-
-  alias SDL_Rect = void;
-}

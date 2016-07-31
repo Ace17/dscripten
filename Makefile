@@ -15,9 +15,9 @@ $(BIN)/full.html: $(BIN)/full.cbe.c rt/runtime.c
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
-	ldc2 -Isrc $< -c -output-bc -of$@
+	ldc2 -boundscheck=off -Isrc $< -c -output-bc -of$@
 
-$(BIN)/full.bc: $(BIN)/src/main.bc $(BIN)/src/vec.bc
+$(BIN)/full.bc: $(BIN)/src/main.bc $(BIN)/src/vec.bc $(BIN)/src/minirt.bc
 	@mkdir -p $(dir $@)
 	llvm-link -o "$@" $^
 

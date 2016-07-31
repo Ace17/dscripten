@@ -4,9 +4,12 @@
 // make link work. will most probably crash if actually used during runtime.
 int _d_dso_registry;
 int _d_assert_msg;
+int _d_switch_error;
 
 void startup();
 void mainLoop();
+
+static int mustQuit;
 
 #ifdef __EMSCRIPTEN__
 
@@ -24,7 +27,7 @@ int main()
 int main()
 {
   startup();
-  for(;;)
+  while(!mustQuit)
   {
     mainLoop();
     SDL_Delay(16);
@@ -33,4 +36,10 @@ int main()
 }
 
 #endif
+
+void quit()
+{
+  printf("Goodbye!\n");
+  mustQuit = 1;
+}
 
