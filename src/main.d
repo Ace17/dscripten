@@ -9,7 +9,7 @@ import core.stdc.stdio;
 
 import sdl;
 import vec;
-import game;
+static import game;
 
 SDL_Surface* screen;
 
@@ -21,43 +21,48 @@ void startup()
   SDL_Init(SDL_INIT_EVERYTHING);
   screen = SDL_SetVideoMode(640, 480, 32, 0);
   printf("Keys: WASD\n");
-  init();
+  game.init();
 }
 
 extern(C)
 void mainLoop()
 {
   auto cmd = processInput();
-  update(cmd);
+  game.update(cmd);
   drawScreen();
 }
 
-Vec2 processInput()
+game.Command processInput()
 {
   SDL_PumpEvents();
+
+  game.Command cmd;
+
   auto keyboard = SDL_GetKeyState(null);
   if(keyboard[SDLK_ESCAPE])
     quit();
   if(keyboard[SDLK_F2])
-    init();
-
-  Vec2 cmd;
+    game.init();
   if(keyboard[SDLK_a])
-    cmd.x += -1;
+    cmd.dir.x += -1;
   if(keyboard[SDLK_d])
-    cmd.x += +1;
+    cmd.dir.x += +1;
   if(keyboard[SDLK_w])
-    cmd.y += -1;
+    cmd.dir.y += -1;
   if(keyboard[SDLK_s])
-    cmd.y += +1;
+    cmd.dir.y += +1;
+  if(keyboard[SDLK_SPACE])
+    cmd.fire = true;
 
   return cmd;
 }
 
 void drawScreen()
 {
-  SDL_FillRect(screen, null, 0x80808080);
-  boxColor(screen, pos.x, pos.y, pos.x+10, pos.y+10, 0xFFFFFFFF);
+  SDL_FillRect(screen, null, 0x20202020);
+  int size = 10;
+  uint color = game.firing ? 0xFFFFFFFF : 0xCCCCCCCC;
+  boxColor(screen, game.pos.x-size/2, game.pos.y-size/2, game.pos.x+size, game.pos.y+size, color);
   SDL_Flip(screen);
 }
 

@@ -12,8 +12,15 @@ import minirt;
 
 Vec2 pos;
 Vec2 vel;
+bool firing;
 
 enum SPEED = 30;
+
+struct Command
+{
+  Vec2 dir;
+  bool fire;
+}
 
 void init()
 {
@@ -31,9 +38,9 @@ void init()
   vel = Vec2(1000, 0);
 }
 
-void update(Vec2 cmd)
+void update(Command cmd)
 {
-  vel += cmd * SPEED;
+  vel += cmd.dir * SPEED;
   if(pos.x < 0)
     vel.x = abs(vel.x);
   if(pos.x > 640)
@@ -47,5 +54,7 @@ void update(Vec2 cmd)
   pos += vel / 10;
   vel *= 9;
   vel /= 10;
+
+  firing = cmd.fire;
 }
 
