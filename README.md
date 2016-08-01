@@ -30,9 +30,9 @@ Usage
 
 * Add some directories to your PATH
 
-  First, the python 'emcc' tools
+  First, the native LLVM 3.7 toolchain (providing ldc2 and llvm-cbe)
   ```
-  $ export PATH=/tmp/toolchains/emscripten:$PATH
+  $ export PATH=/tmp/toolchains/llvm-native/bin:$PATH
   ```
 
   Then, the JSBackend LLVM 3.9svn toolchain (aka 'fastcomp') (used by emscripten)
@@ -40,9 +40,9 @@ Usage
   $ export PATH=/tmp/toolchains/llvm-js/bin:$PATH
   ```
 
-  Then, the native LLVM 3.7 toolchain (here live ldc2 and llvm-cbe)
+  Finally, the python 'emcc' tools, which rely on the JSBackend LLVM toolchain
   ```
-  $ export PATH=/tmp/toolchains/llvm-native/bin:$PATH
+  $ export PATH=/tmp/toolchains/emscripten:$PATH
   ```
 
 * Check your PATH:
