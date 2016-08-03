@@ -65,7 +65,34 @@ void drawScreen()
   boxRGBA(screen, 0, 0, WIDTH, HEIGHT, 128, 224, 255, 64);
   int size = 10;
   uint color = game.firing ? 255 : 0;
-  boxRGBA(screen, game.pos.x-size/2, game.pos.y-size/2, game.pos.x+size, game.pos.y+size, 255, 255-color, 0, 255);
+
+  drawBox(game.player.pos, playerColor);
+
+  foreach(ref box; game.boxes)
+  {
+    if(box.enable)
+      drawBox(box.pos, enemyColor);
+  }
+
+  const border = 10;
+  lineRGBA(screen, border, border, WIDTH-border, border, 255, 255, 255, 255);
+  lineRGBA(screen, WIDTH-border, border, WIDTH-border, HEIGHT-border, 255, 255, 255, 255);
+  lineRGBA(screen, WIDTH-border, HEIGHT-border, border, HEIGHT-border, 255, 255, 255, 255);
+  lineRGBA(screen, border, HEIGHT-border, border, border, 255, 255, 255, 255);
+
   SDL_Flip(screen);
+}
+
+const enemyColor = Color(255, 0, 0, 255);
+const playerColor = Color(255, 255, 0, 255);
+
+struct Color
+{
+  int r, g, b, a;
+}
+
+void drawBox(Vec2 pos, Color color)
+{
+  boxRGBA(screen, pos.x, pos.y, pos.x+10, pos.y+10, color.r, color.g, color.b, color.a);
 }
 
