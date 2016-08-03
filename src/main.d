@@ -46,7 +46,7 @@ game.Command processInput()
   if(keyboard[SDLK_ESCAPE])
     quit();
 
-  if(keyboard[SDLK_F2])
+  if(keyboard[SDLK_F2] || keyboard[SDLK_r])
     game.init();
 
   if(keyboard[SDLK_a])
@@ -69,7 +69,7 @@ game.Command processInput()
 
 void drawScreen()
 {
-  boxRGBA(screen, 0, 0, WIDTH, HEIGHT, 128, 224, 255, 64);
+  boxColor(Vec2(0, 0), Vec2(WIDTH, HEIGHT), game.dead ? deadBackgroundColor : backgroundColor);
   int size = 10;
   uint color = game.firing ? 255 : 0;
 
@@ -90,7 +90,9 @@ void drawScreen()
   SDL_Flip(screen);
 }
 
-const enemyColor = Color(255, 0, 0, 255);
+const backgroundColor = Color(128, 224, 255, 64);
+const deadBackgroundColor = Color(224, 128, 128, 255);
+const enemyColor = Color(255, 0, 0, 224);
 const playerColor = Color(255, 255, 0, 255);
 
 struct Color
@@ -100,6 +102,11 @@ struct Color
 
 void drawBox(Vec2 pos, Color color)
 {
-  boxRGBA(screen, pos.x, pos.y, pos.x + 10, pos.y + 10, color.r, color.g, color.b, color.a);
+  boxColor(pos, Vec2(10, 10), color);
+}
+
+void boxColor(Vec2 pos, Vec2 size, Color color)
+{
+  boxRGBA(screen, pos.x, pos.y, pos.x + size.x, pos.y + size.y, color.r, color.g, color.b, color.a);
 }
 

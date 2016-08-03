@@ -14,6 +14,7 @@ import minirt;
 Box player;
 bool firing;
 int ticks;
+bool dead;
 
 struct Box
 {
@@ -22,9 +23,27 @@ struct Box
   Vec2 vel;
 }
 
+bool overlaps(ref Box a, ref Box b)
+{
+  if(a.pos.x + SIZE < b.pos.x)
+    return false;
+
+  if(b.pos.x + SIZE < a.pos.x)
+    return false;
+
+  if(a.pos.y + SIZE < b.pos.y)
+    return false;
+
+  if(b.pos.y + SIZE < a.pos.y)
+    return false;
+
+  return true;
+}
+
 Box[128] boxes;
 
 enum SPEED = 30;
+enum SIZE = 10;
 
 struct Command
 {
@@ -34,25 +53,33 @@ struct Command
 
 void init()
 {
+  dead = false;
   ticks = 0;
-  enum COLOR
-  {
-    RED,
-    GREEN,
-    BLUE,
-  }
 
-  auto c = COLOR.GREEN;
-  printf("%s\n", enumToString(c).ptr);
+  if(0)
+  {
+    enum COLOR
+    {
+      RED,
+      GREEN,
+      BLUE,
+    }
+
+    auto c = COLOR.GREEN;
+    printf("%s\n", enumToString(c).ptr);
+  }
 
   boxes[] = Box();
   player.pos = Vec2(100, 100);
   player.vel = Vec2(1000, 0);
 
-  for(int i = 0; i < 10; ++i)
-    spawnBox(Vec2(uniform(0, 640), uniform(0, 480)));
+  for(int i = 0; i < 2; ++i)
+    spawnRandomBox();
+}
 
-  shakeEnemies();
+void spawnRandomBox()
+{
+  spawnBox(Vec2(uniform(0, 640), uniform(0, 480)));
 }
 
 void shakeEnemies()
@@ -84,18 +111,49 @@ Box* allocBox()
 
 void update(Command cmd)
 {
+  if(dead)
+    return;
+
   player.vel += cmd.dir * SPEED;
   firing = cmd.fire;
+
+  if(ticks % 100 == 0)
+  {
+    spawnRandomBox();
+    shakeEnemies();
+  }
 
   updateBox(&player);
 
   foreach(ref b; boxes)
     updateBox(&b);
 
-  if(ticks % 100 == 0)
-    shakeEnemies();
+  detectCollisions();
 
   ++ticks;
+}
+
+void detectCollisions()
+{
+  foreach(ref b; boxes)
+  {
+    if(!b.enable)
+      continue;
+
+    if(overlaps(b, player))
+    {
+      gameOver();
+      break;
+    }
+  }
+}
+
+void gameOver()
+{
+  dead = true;
+  printf("YOU DIED!\n");
+  printf("YOUR SCORE: %d\n", ticks);
+  printf("PRESS 'R' TO RESTART\n");
 }
 
 void updateBox(Box* box)
@@ -103,13 +161,13 @@ void updateBox(Box* box)
   if(box.pos.x < 0)
     box.vel.x = abs(box.vel.x);
 
-  if(box.pos.x > 640)
+  if(box.pos.x + SIZE > 640)
     box.vel.x = -abs(box.vel.x);
 
   if(box.pos.y < 0)
     box.vel.y = abs(box.vel.y);
 
-  if(box.pos.y > 480)
+  if(box.pos.y + SIZE > 480)
     box.vel.y = -abs(box.vel.y);
 
   box.pos += box.vel / 10;
