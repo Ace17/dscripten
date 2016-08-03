@@ -42,18 +42,25 @@ game.Command processInput()
   game.Command cmd;
 
   auto keyboard = SDL_GetKeyState(null);
+
   if(keyboard[SDLK_ESCAPE])
     quit();
+
   if(keyboard[SDLK_F2])
     game.init();
+
   if(keyboard[SDLK_a])
     cmd.dir.x += -1;
+
   if(keyboard[SDLK_d])
     cmd.dir.x += +1;
+
   if(keyboard[SDLK_w])
     cmd.dir.y += -1;
+
   if(keyboard[SDLK_s])
     cmd.dir.y += +1;
+
   if(keyboard[SDLK_SPACE])
     cmd.fire = true;
 
@@ -75,10 +82,10 @@ void drawScreen()
   }
 
   const border = 10;
-  lineRGBA(screen, border, border, WIDTH-border, border, 255, 255, 255, 255);
-  lineRGBA(screen, WIDTH-border, border, WIDTH-border, HEIGHT-border, 255, 255, 255, 255);
-  lineRGBA(screen, WIDTH-border, HEIGHT-border, border, HEIGHT-border, 255, 255, 255, 255);
-  lineRGBA(screen, border, HEIGHT-border, border, border, 255, 255, 255, 255);
+  lineRGBA(screen, border, border, WIDTH - border, border, 255, 255, 255, 255);
+  lineRGBA(screen, WIDTH - border, border, WIDTH - border, HEIGHT - border, 255, 255, 255, 255);
+  lineRGBA(screen, WIDTH - border, HEIGHT - border, border, HEIGHT - border, 255, 255, 255, 255);
+  lineRGBA(screen, border, HEIGHT - border, border, border, 255, 255, 255, 255);
 
   SDL_Flip(screen);
 }
@@ -93,6 +100,6 @@ struct Color
 
 void drawBox(Vec2 pos, Color color)
 {
-  boxRGBA(screen, pos.x, pos.y, pos.x+10, pos.y+10, color.r, color.g, color.b, color.a);
+  boxRGBA(screen, pos.x, pos.y, pos.x + 10, pos.y + 10, color.r, color.g, color.b, color.a);
 }
 

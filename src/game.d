@@ -6,7 +6,7 @@
  * License, or (at your option) any later version.
  */
 import core.stdc.stdio;
-import core.stdc.stdlib : rand;
+import core.stdc.stdlib: rand;
 
 import vec;
 import minirt;
@@ -49,7 +49,7 @@ void init()
   player.pos = Vec2(100, 100);
   player.vel = Vec2(1000, 0);
 
-  for(int i=0;i < 10;++i)
+  for(int i = 0; i < 10; ++i)
     spawnBox(Vec2(uniform(0, 640), uniform(0, 480)));
 
   shakeEnemies();
@@ -58,7 +58,7 @@ void init()
 void shakeEnemies()
 {
   foreach(ref b; boxes)
-    b.vel = Vec2(uniform(-5, 5) * 100,uniform(-5, 5) * 100);
+    b.vel = Vec2(uniform(-5, 5) * 100, uniform(-5, 5) * 100);
 }
 
 Box* spawnBox(Vec2 where)
@@ -102,11 +102,13 @@ void updateBox(Box* box)
 {
   if(box.pos.x < 0)
     box.vel.x = abs(box.vel.x);
+
   if(box.pos.x > 640)
     box.vel.x = -abs(box.vel.x);
 
   if(box.pos.y < 0)
     box.vel.y = abs(box.vel.y);
+
   if(box.pos.y > 480)
     box.vel.y = -abs(box.vel.y);
 
