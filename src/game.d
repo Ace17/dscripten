@@ -55,6 +55,9 @@ struct Command
 
 void init()
 {
+  printf("-------------------------\n");
+  printf("Avoid the red boxes!\n");
+
   dead = false;
   ticks = 0;
 
@@ -155,9 +158,9 @@ void gameOver()
   dead = true;
 
   bestScore = max(bestScore, ticks);
-  printf("YOU DIED!\n");
-  printf("YOUR SCORE: %d (BEST: %d)\n", ticks, bestScore);
-  printf("PRESS 'R' TO RESTART\n");
+  printf("You died!\n");
+  printf("Your score: %d (High score: %d)\n", ticks, bestScore);
+  printf("Press 'R' to retry\n");
 }
 
 void updateBox(Box* box)

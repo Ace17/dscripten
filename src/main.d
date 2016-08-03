@@ -46,8 +46,17 @@ game.Command processInput()
   if(keyboard[SDLK_ESCAPE])
     quit();
 
+  static bool debounce;
   if(keyboard[SDLK_F2] || keyboard[SDLK_r])
-    game.init();
+  {
+    if(debounce)
+    {
+      game.init();
+      debounce = false;
+    }
+  }
+  else
+    debounce = true;
 
   if(keyboard[SDLK_a])
     cmd.dir.x += -1;
