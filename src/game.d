@@ -7,6 +7,7 @@
  */
 import core.stdc.stdio;
 import core.stdc.stdlib: rand;
+import std.algorithm;
 
 import vec;
 import minirt;
@@ -15,6 +16,7 @@ Box player;
 bool firing;
 int ticks;
 bool dead;
+int bestScore;
 
 struct Box
 {
@@ -151,8 +153,10 @@ void detectCollisions()
 void gameOver()
 {
   dead = true;
+
+  bestScore = max(bestScore, ticks);
   printf("YOU DIED!\n");
-  printf("YOUR SCORE: %d\n", ticks);
+  printf("YOUR SCORE: %d (BEST: %d)\n", ticks, bestScore);
   printf("PRESS 'R' TO RESTART\n");
 }
 
