@@ -8,7 +8,7 @@ all: $(BIN)/full.$(EXT)
 clean:
 	rm -rf $(BIN)
 
-$(BIN)/full.$(EXT): $(BIN)/full.cbe.c rt/runtime.c
+$(BIN)/full.$(EXT): $(BIN)/full.bc
 	@mkdir -p $(dir $@)
 	$(CC) -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
 
@@ -23,10 +23,4 @@ $(BIN)/full.bc: \
 	$(BIN)/src/minirt.bc
 	@mkdir -p $(dir $@)
 	llvm-link -o "$@" $^
-
-$(BIN)/%.cbe.c: $(BIN)/%.bc
-	@mkdir -p $(dir $@)
-	llvm-dis "$<" -o="$(BIN)/$*.ll"
-	llvm-cbe "$(BIN)/$*.ll" -o="$@"
-	@sed -i 's/^#include <APInt-C\.h>//' "$@"
 

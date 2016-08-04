@@ -1,65 +1,21 @@
 #!/usr/bin/env bash
 
-# This script downloads, builds and deploys a D-to-LLVM-to-C-to-ASMJS toolchain.
-# It's a pity we have to build LLVM twice, but LDC, emscripten-fastcomp, and llvm-cbe have decided not to be compatible.
+# This script downloads, builds and deploys a D-to-ASMJS toolchain.
 # Usage:
 # $ ./fetch_toolchain
-# A painfully long time after, you've to a full toolchain in '/tmp/toolchains/emsd'
+# A long time after, you've to a full toolchain in '/tmp/toolchains2/llvm-js'
 
 set -euo pipefail
 
-readonly PREFIX_NAT=/tmp/toolchains/llvm-native
-readonly PREFIX_JS=/tmp/toolchains/llvm-js
-readonly PREFIX_EMS=/tmp/toolchains/emscripten
-readonly tmpDir=/tmp/emsd-source
+readonly scriptDir=$(realpath $(dirname $0))
+readonly PREFIX_JS="/tmp/toolchains2/llvm-js"
+readonly PREFIX_EMS="/tmp/toolchains2/emscripten"
+readonly tmpDir="/tmp/toolchains2/source"
 
 function main
 {
   mkdir -p $tmpDir
 
-  buildEmscripten
-  buildLdc
-}
-
-# Here, we build and install:
-# - vanilla LLVM (3.7)
-# - ldc D2 compiler (which requires LLVM >= 3.5)
-# - llvm-cbe, aka the "resurrected C backend" (which requires LLVM == 3.7)
-function buildLdc
-{
-  if [ ! -d $tmpDir/ldc ] ; then
-    git clone --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
-    # runFrom $tmpDir/ldc git checkout 'be63398346f395814ddc73546e66821888c2fffd'
-  fi
-
-  if [ ! -d $tmpDir/llvm ] ; then
-    git clone --depth=1 -b release_37 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
-    # runFrom $tmpDir/llvm git checkout '33c352b3eda89abc24e7511d9045fa2e499a42e3'
-  fi
-
-  if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
-    git clone --depth=1 -b forwardDeclare --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
-    # runFrom $tmpDir/llvm/projects/llvm-cbe 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
-  fi
-
-  mkdir -p $tmpDir/bin/llvm
-  runFrom $tmpDir/bin/llvm ../../llvm/configure --enable-targets=host --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --prefix=$PREFIX_NAT
-  runFrom $tmpDir/bin/llvm make -j`nproc`
-  runFrom $tmpDir/bin/llvm make -j`nproc` install
-  cp $tmpDir/bin/llvm/Release/bin/llvm-cbe $PREFIX_NAT/bin
-
-  mkdir -p $tmpDir/bin/ldc
-  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config" -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" ../../ldc
-  runFrom $tmpDir/bin/ldc make -j`nproc`
-  runFrom $tmpDir/bin/ldc make -j`nproc` install
-}
-
-# Here, we build and install:
-# - 'fastcomp' LLVM
-# - 'fastcomp' clang fronted (which requires 'fastcomp' LLVM)
-# - emscripten (python wrapper scripts)
-function buildEmscripten
-{
   # emcc and other python wrappers
   if [ ! -d $PREFIX_EMS ] ; then
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
@@ -73,15 +29,54 @@ function buildEmscripten
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
-  if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
-    git clone --depth=1 -b master --single-branch git@github.com:kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
+  if [ ! -d $tmpDir/emscripten-clang ] ; then
+    git clone --depth=1 -b master --single-branch git@github.com:kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-clang
     # runFrom $tmpDir/emscripten-llvm/tools/clang git checkout '271ce598c3d1fe74efadc254f5be1b57edea9f41'
   fi
 
+  # official D frontend
+  if [ ! -d $tmpDir/ldc ] ; then
+    git clone --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
+    # runFrom $tmpDir/ldc git checkout 'be63398346f395814ddc73546e66821888c2fffd'
+    # sed -i "s/debuginfocodeview//" $tmpDir/ldc/CMakeLists.txt
+    # sed -i "s/globalisel//" $tmpDir/ldc/CMakeLists.txt
+    patch -d $tmpDir/ldc -p1 -i $scriptDir/ldc2.patch
+  fi
+
   mkdir -p $tmpDir/bin/emscripten-llvm
-  runFrom $tmpDir/bin/emscripten-llvm ../../emscripten-llvm/configure --enable-targets=host,js --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --disable-docs --prefix=$PREFIX_JS
+  runFrom $tmpDir/bin/emscripten-llvm cmake \
+    -G "Unix Makefiles" \
+    -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
+    -D "CMAKE_BUILD_TYPE=MinSizeRel" \
+    -D "LLVM_ENABLE_WARNINGS=OFF" \
+    -D "LLVM_TARGETS_TO_BUILD='host'" \
+    -D "LLVM_EXPERIMENTAL_TARGETS_TO_BUILD='JSBackend'" \
+    -D "LLVM_INCLUDE_TESTS=OFF" \
+    -D "LLVM_INCLUDE_EXAMPLES=OFF" \
+    -D "LLVM_ENABLE_ASSERTIONS=OFF" \
+    ../../emscripten-llvm
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc`
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc` install
+
+  # Don't compile this, the compilation process is painfully slow and way too much RAM
+# mkdir -p $tmpDir/bin/emscripten-clang
+# runFrom $tmpDir/bin/emscripten-clang cmake \
+#   -G "Unix Makefiles" \
+#   -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
+#   -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" \
+#   ../../emscripten-clang
+# runFrom $tmpDir/bin/emscripten-clang make -j4
+# runFrom $tmpDir/bin/emscripten-clang make -j`nproc` install
+
+  mkdir -p $tmpDir/bin/ldc
+  runFrom $tmpDir/bin/ldc cmake \
+    -G "Unix Makefiles" \
+    -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
+    -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" \
+    ../../ldc
+  runFrom $tmpDir/bin/ldc make -j`nproc` bin/ldc2
+  cp $tmpDir/bin/ldc/bin/ldc2 $PREFIX_JS/bin/ldc2 # poor man's installation
+#  runFrom $tmpDir/bin/ldc make -j`nproc` install
 }
 
 function runFrom

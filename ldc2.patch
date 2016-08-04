@@ -1,0 +1,242 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8a38401..3c9bf4e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,7 +22,7 @@ endif()
+ #
+ 
+ find_package(LLVM 3.5 REQUIRED
+-    all-targets analysis asmparser asmprinter bitreader bitwriter codegen core debuginfocodeview debuginfodwarf debuginfopdb globalisel instcombine ipa ipo instrumentation irreader linker lto mc mcdisassembler mcparser objcarcopts object option profiledata scalaropts selectiondag support tablegen target transformutils vectorize ${EXTRA_LLVM_MODULES})
++    all-targets analysis asmparser asmprinter bitreader bitwriter codegen core  debuginfodwarf debuginfopdb  instcombine ipa ipo instrumentation irreader linker lto mc mcdisassembler mcparser objcarcopts object option profiledata scalaropts selectiondag support tablegen target transformutils vectorize ${EXTRA_LLVM_MODULES})
+ math(EXPR LDC_LLVM_VER ${LLVM_VERSION_MAJOR}*100+${LLVM_VERSION_MINOR})
+ # Remove LLVMTableGen library from list of libraries
+ string(REGEX MATCH "^-.*LLVMTableGen[^;]*;|;-.*LLVMTableGen[^;]*" LLVM_TABLEGEN_LIBRARY "${LLVM_LIBRARIES}")
+diff --git a/driver/main.cpp b/driver/main.cpp
+index 38790ce..a99467e 100644
+--- a/driver/main.cpp
++++ b/driver/main.cpp
+@@ -115,7 +115,7 @@ static cl::opt<bool> staticFlag(
+         "Create a statically linked binary, including all system dependencies"),
+     cl::ZeroOrMore);
+ 
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+ static inline llvm::Optional<llvm::Reloc::Model> getRelocModel() {
+   if (mRelocModel.getNumOccurrences()) {
+     llvm::Reloc::Model R = mRelocModel;
+@@ -674,7 +674,7 @@ static void initializePasses() {
+   initializeInstrumentation(Registry);
+   initializeAnalysis(Registry);
+   initializeCodeGen(Registry);
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+   initializeGlobalISel(Registry);
+ #endif
+   initializeTarget(Registry);
+diff --git a/driver/targetmachine.cpp b/driver/targetmachine.cpp
+index 987be42..b7cd116 100644
+--- a/driver/targetmachine.cpp
++++ b/driver/targetmachine.cpp
+@@ -96,7 +96,7 @@ MipsABI::Type getMipsABI() {
+ #endif
+     if (dl.getPointerSizeInBits() == 64)
+       return MipsABI::N64;
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     else if (dl.getLargestLegalIntTypeSizeInBits() == 64)
+ #else
+     else if (dl.getLargestLegalIntTypeSize() == 64)
+@@ -428,7 +428,7 @@ llvm::TargetMachine *createTargetMachine(
+     std::string targetTriple, std::string arch, std::string cpu,
+     std::vector<std::string> attrs, ExplicitBitness::Type bitness,
+     FloatABI::Type floatABI,
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     llvm::Optional<llvm::Reloc::Model> relocModel,
+ #else
+     llvm::Reloc::Model relocModel,
+@@ -519,7 +519,7 @@ llvm::TargetMachine *createTargetMachine(
+   }
+ 
+   // Handle cases where LLVM picks wrong default relocModel
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+   if (!relocModel.hasValue()) {
+ #else
+   if (relocModel == llvm::Reloc::Default) {
+diff --git a/driver/targetmachine.h b/driver/targetmachine.h
+index f93a673..872be71 100644
+--- a/driver/targetmachine.h
++++ b/driver/targetmachine.h
+@@ -50,7 +50,7 @@ llvm::TargetMachine *createTargetMachine(
+     std::string targetTriple, std::string arch, std::string cpu,
+     std::vector<std::string> attrs, ExplicitBitness::Type bitness,
+     FloatABI::Type floatABI,
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     llvm::Optional<llvm::Reloc::Model> relocModel,
+ #else
+     llvm::Reloc::Model relocModel,
+diff --git a/gen/arrays.cpp b/gen/arrays.cpp
+index 8d564aa..c440165 100644
+--- a/gen/arrays.cpp
++++ b/gen/arrays.cpp
+@@ -571,7 +571,7 @@ void initializeArrayLiteral(IRState *p, ArrayLiteralExp *ale, LLValue *dstMem) {
+       auto gvar = new llvm::GlobalVariable(gIR->module, constarr->getType(),
+                                            true, LLGlobalValue::InternalLinkage,
+                                            constarr, ".arrayliteral");
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+       gvar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+ #else
+       gvar->setUnnamedAddr(true);
+diff --git a/gen/module.cpp b/gen/module.cpp
+index 99912dc..efec813 100644
+--- a/gen/module.cpp
++++ b/gen/module.cpp
+@@ -719,7 +719,7 @@ static void loadInstrProfileData(IRState *irs) {
+ 
+     auto readerOrErr =
+         llvm::IndexedInstrProfReader::create(global.params.datafileInstrProf);
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     if (auto E = readerOrErr.takeError()) {
+       handleAllErrors(std::move(E), [&](const llvm::ErrorInfoBase &EI) {
+         irs->dmodule->error("Could not read profile file %s: %s",
+@@ -739,7 +739,7 @@ static void loadInstrProfileData(IRState *irs) {
+ #endif
+     irs->PGOReader = std::move(readerOrErr.get());
+ 
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     if (!irs->module.getProfileSummary()) {
+       // Don't reset the summary. There is only one profile data file per LDC
+       // invocation so the summary must be the same as the one that is already
+diff --git a/gen/optimizer.cpp b/gen/optimizer.cpp
+index 48cdf8f..f71a678 100644
+--- a/gen/optimizer.cpp
++++ b/gen/optimizer.cpp
+@@ -229,7 +229,7 @@ static void addInstrProfilingPass(legacy::PassManagerBase &mpm) {
+     InstrProfOptions options;
+     options.NoRedZone = global.params.disableRedZone;
+     options.InstrProfileOutput = global.params.datafileInstrProf;
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     mpm.add(createInstrProfilingLegacyPass(options));
+ #else
+     mpm.add(createInstrProfilingPass(options));
+diff --git a/gen/pgo.cpp b/gen/pgo.cpp
+index 35b9505..47e922d 100644
+--- a/gen/pgo.cpp
++++ b/gen/pgo.cpp
+@@ -901,7 +901,7 @@ void CodeGenPGO::loadRegionCounts(llvm::IndexedInstrProfReader *PGOReader,
+                                   const FuncDeclaration *fd) {
+   RegionCounts.clear();
+ 
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+   llvm::Expected<llvm::InstrProfRecord> RecordExpected =
+       PGOReader->getInstrProfRecord(FuncName, FunctionHash);
+   auto EC = RecordExpected.takeError();
+@@ -910,7 +910,7 @@ void CodeGenPGO::loadRegionCounts(llvm::IndexedInstrProfReader *PGOReader,
+ #endif
+ 
+   if (EC) {
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     auto IPE = llvm::InstrProfError::take(std::move(EC));
+ #else
+     auto IPE = EC;
+@@ -946,7 +946,7 @@ void CodeGenPGO::loadRegionCounts(llvm::IndexedInstrProfReader *PGOReader,
+     return;
+   }
+ 
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+   ProfRecord =
+       llvm::make_unique<llvm::InstrProfRecord>(std::move(RecordExpected.get()));
+   RegionCounts = ProfRecord->Counts;
+@@ -1089,7 +1089,7 @@ void CodeGenPGO::emitIndirectCallPGO(llvm::Instruction *callSite,
+ 
+ void CodeGenPGO::valueProfile(uint32_t valueKind, llvm::Instruction *valueSite,
+                               llvm::Value *value, bool ptrCastNeeded) {
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+   if (!value || !valueSite)
+     return;
+ 
+diff --git a/gen/rttibuilder.cpp b/gen/rttibuilder.cpp
+index d0627b6..e59a59c 100644
+--- a/gen/rttibuilder.cpp
++++ b/gen/rttibuilder.cpp
+@@ -43,7 +43,7 @@ void RTTIBuilder::push(llvm::Constant *C) {
+   // We need to explicitly zero any padding bytes as per TDPL §7.1.1 (and
+   // also match the struct type lowering code here).
+   const uint64_t fieldStart =
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     llvm::alignTo
+ #else
+     llvm::RoundUpToAlignment
+diff --git a/gen/toconstelem.cpp b/gen/toconstelem.cpp
+index 9d9ef57..650f78d 100644
+--- a/gen/toconstelem.cpp
++++ b/gen/toconstelem.cpp
+@@ -178,7 +178,7 @@ public:
+           llvm::GlobalValue::PrivateLinkage;
+       gvar = new llvm::GlobalVariable(gIR->module, _init->getType(), true,
+                                       _linkage, _init, ".str");
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+       gvar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+ #else
+       gvar->setUnnamedAddr(true);
+@@ -546,7 +546,7 @@ public:
+     auto gvar = new llvm::GlobalVariable(
+         gIR->module, initval->getType(), canBeConst,
+         llvm::GlobalValue::InternalLinkage, initval, ".dynarrayStorage");
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     gvar->setUnnamedAddr(canBeConst ? llvm::GlobalValue::UnnamedAddr::Global : llvm::GlobalValue::UnnamedAddr::None);
+ #else
+     gvar->setUnnamedAddr(canBeConst);
+diff --git a/gen/toir.cpp b/gen/toir.cpp
+index 86657b4..c4b978e 100644
+--- a/gen/toir.cpp
++++ b/gen/toir.cpp
+@@ -402,7 +402,7 @@ public:
+       }
+       gvar = new llvm::GlobalVariable(gIR->module, at, true, _linkage, _init,
+                                       ".str");
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+       gvar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+ #else
+       gvar->setUnnamedAddr(true);
+diff --git a/gen/tollvm.cpp b/gen/tollvm.cpp
+index 554ce2d..554c116 100644
+--- a/gen/tollvm.cpp
++++ b/gen/tollvm.cpp
+@@ -462,7 +462,7 @@ LLConstant *DtoConstString(const char *str) {
+     gvar = new llvm::GlobalVariable(gIR->module, init->getType(), true,
+                                     llvm::GlobalValue::PrivateLinkage, init,
+                                     ".str");
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+     gvar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+ #else
+     gvar->setUnnamedAddr(true);
+diff --git a/ir/irclass.cpp b/ir/irclass.cpp
+index 5ca3375..92b633e 100644
+--- a/ir/irclass.cpp
++++ b/ir/irclass.cpp
+@@ -353,7 +353,7 @@ llvm::GlobalVariable *IrAggr::getInterfaceVtbl(BaseClass *b, bool new_instance,
+ 
+ // Thunks themselves don't have an identity, only the target
+ // function has.
+-#if LDC_LLVM_VER >= 309
++#if LDC_LLVM_VER >= 309 && 0
+       thunk->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+ #else
+       thunk->setUnnamedAddr(true);
+diff --git a/utils/llvm-profdata-3.9.cpp b/utils/llvm-profdata-3.9.cpp

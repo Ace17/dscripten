@@ -6,5 +6,11 @@ export BIN="bin/asmjs"
 export EXT="html"
 export CC="emcc"
 
-make -j`nproc` CFLAGS="-Iapi/ems"
+CFLAGS+="-Iapi/ems "
+CFLAGS+="-I/tmp/toolchains2/source/ldc/runtime/druntime/src "
+CFLAGS+="-I/tmp/toolchains2/source/ldc/runtime/phobos "
+
+export CFLAGS
+
+make -j`nproc`
 
