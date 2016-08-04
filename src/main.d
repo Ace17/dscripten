@@ -24,7 +24,6 @@ void startup()
   SDL_Init(SDL_INIT_VIDEO);
   screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, 0);
   SDL_WM_SetCaption("Dscripten demo game", null);
-  printf("Keys: WASD\n");
   game.init();
 }
 
