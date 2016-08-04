@@ -3600,7 +3600,7 @@ void SDL_GL_Unlock();
 /*
  * Sets/Gets the title and icon text of the display window
  */
-void SDL_WM_SetCaption(char *title, char *icon);
+void SDL_WM_SetCaption(const char *title, char *icon);
 void SDL_WM_GetCaption(char **title, char **icon);
 
 /*

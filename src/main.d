@@ -11,18 +11,19 @@ import sdl;
 import vec;
 static import game;
 
+alias WIDTH = game.WIDTH;
+alias HEIGHT = game.HEIGHT;
+
 SDL_Surface* screen;
 
 extern(C) void quit();
 
-enum WIDTH = 640;
-enum HEIGHT = 480;
-
 extern(C)
 void startup()
 {
-  SDL_Init(SDL_INIT_EVERYTHING);
+  SDL_Init(SDL_INIT_VIDEO);
   screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, 0);
+  SDL_WM_SetCaption("Dscripten demo game", null);
   printf("Keys: WASD\n");
   game.init();
 }
@@ -58,16 +59,16 @@ game.Command processInput()
   else
     debounce = true;
 
-  if(keyboard[SDLK_a] || keyboard[SDLK_q])
+  if(keyboard[SDLK_a] || keyboard[SDLK_q] || keyboard[SDLK_LEFT])
     cmd.dir.x += -1;
 
-  if(keyboard[SDLK_d])
+  if(keyboard[SDLK_d] || keyboard[SDLK_RIGHT])
     cmd.dir.x += +1;
 
-  if(keyboard[SDLK_w] || keyboard[SDLK_z])
+  if(keyboard[SDLK_w] || keyboard[SDLK_z] || keyboard[SDLK_UP])
     cmd.dir.y += -1;
 
-  if(keyboard[SDLK_s])
+  if(keyboard[SDLK_s] || keyboard[SDLK_DOWN])
     cmd.dir.y += +1;
 
   if(keyboard[SDLK_SPACE])

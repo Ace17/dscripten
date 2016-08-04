@@ -12,6 +12,9 @@ import std.algorithm;
 import vec;
 import minirt;
 
+enum WIDTH = 512;
+enum HEIGHT = 512;
+
 Box player;
 bool firing;
 int ticks;
@@ -84,7 +87,7 @@ void init()
 
 void spawnRandomBox()
 {
-  spawnBox(Vec2(uniform(0, 640), uniform(0, 480)));
+  spawnBox(Vec2(uniform(0, WIDTH), uniform(0, HEIGHT)));
 }
 
 void shakeEnemies()
@@ -168,13 +171,13 @@ void updateBox(Box* box)
   if(box.pos.x < 0)
     box.vel.x = abs(box.vel.x);
 
-  if(box.pos.x + SIZE > 640)
+  if(box.pos.x + SIZE > WIDTH)
     box.vel.x = -abs(box.vel.x);
 
   if(box.pos.y < 0)
     box.vel.y = abs(box.vel.y);
 
-  if(box.pos.y + SIZE > 480)
+  if(box.pos.y + SIZE > HEIGHT)
     box.vel.y = -abs(box.vel.y);
 
   box.pos += box.vel / 10;
