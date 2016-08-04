@@ -1,6 +1,8 @@
 BIN?=bin
 EXT?=exe
 
+CFLAGS?="-Iapi/native"
+
 all: $(BIN)/full.$(EXT)
 
 clean:
@@ -12,7 +14,7 @@ $(BIN)/full.$(EXT): $(BIN)/full.cbe.c rt/runtime.c
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
-	ldc2 -boundscheck=off -Isrc $< -c -output-bc -of$@
+	ldc2 $(CFLAGS) -boundscheck=off -Isrc $< -c -output-bc -of$@
 
 $(BIN)/full.bc: \
 	$(BIN)/src/main.bc \
