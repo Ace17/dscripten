@@ -30,7 +30,7 @@ Usage
 
 * Add some directories to your PATH
 
-  First, the native LLVM 3.7 toolchain (providing ldc2 and llvm-cbe)
+  First, the native LLVM 3.8 toolchain (providing ldc2 and llvm-cbe)
   ```
   $ export PATH=/tmp/toolchains/llvm-native/bin:$PATH
   ```

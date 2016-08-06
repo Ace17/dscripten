@@ -22,9 +22,9 @@ function main
 }
 
 # Here, we build and install:
-# - vanilla LLVM (3.7)
+# - vanilla LLVM (3.8)
 # - ldc D2 compiler (which requires LLVM >= 3.5)
-# - llvm-cbe, aka the "resurrected C backend" (which requires LLVM == 3.7)
+# - llvm-cbe, aka the "resurrected C backend" (which requires LLVM == 3.8)
 function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
@@ -33,12 +33,12 @@ function buildLdc
   fi
 
   if [ ! -d $tmpDir/llvm ] ; then
-    git clone --depth=1 -b release_37 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
+    git clone --depth=1 -b release_38 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
     # runFrom $tmpDir/llvm git checkout '33c352b3eda89abc24e7511d9045fa2e499a42e3'
   fi
 
   if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
-    git clone --depth=1 -b forwardDeclare --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
+    git clone --depth=1 -b standalone --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
     # runFrom $tmpDir/llvm/projects/llvm-cbe 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
   fi
 
