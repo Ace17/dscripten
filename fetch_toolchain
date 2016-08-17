@@ -57,13 +57,17 @@ function buildLdc
 # Here, we build and install:
 # - 'fastcomp' LLVM
 # - 'fastcomp' clang fronted (which requires 'fastcomp' LLVM)
-# - emscripten (python wrapper scripts)
+# - emscripten (python wrapper scripts + header files + pkg-config files)
 function buildEmscripten
 {
   # emcc and other python wrappers
   if [ ! -d $PREFIX_EMS ] ; then
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
     # runFrom $PREFIX_EMS git checkout '07b87426f898d6e9c677db291d9088c839197291'
+
+    # fake pkg-config files to keep the build systems happy
+    cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
+    cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
   fi
 
   # the asmjs backend
