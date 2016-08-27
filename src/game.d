@@ -6,7 +6,6 @@
  * License, or (at your option) any later version.
  */
 import core.stdc.stdio;
-import core.stdc.stdlib: rand;
 import std.algorithm;
 
 import vec;
@@ -15,12 +14,6 @@ import minirt;
 enum WIDTH = 512;
 enum HEIGHT = 512;
 
-Box player;
-bool firing;
-int ticks;
-bool dead;
-int bestScore;
-
 struct Box
 {
   bool enable;
@@ -28,26 +21,12 @@ struct Box
   Vec2 vel;
 }
 
-bool overlaps(ref Box a, ref Box b)
-{
-  if(a.pos.x + SIZE < b.pos.x)
-    return false;
-
-  if(b.pos.x + SIZE < a.pos.x)
-    return false;
-
-  if(a.pos.y + SIZE < b.pos.y)
-    return false;
-
-  if(b.pos.y + SIZE < a.pos.y)
-    return false;
-
-  return true;
-}
+Box player;
+bool firing;
+bool dead;
 
 Box[128] boxes;
 
-enum SPEED = 30;
 enum SIZE = 10;
 
 struct Command
@@ -85,38 +64,6 @@ void init()
     spawnRandomBox();
 }
 
-void spawnRandomBox()
-{
-  spawnBox(Vec2(uniform(0, WIDTH), uniform(0, HEIGHT)));
-}
-
-void shakeEnemies()
-{
-  foreach(ref b; boxes)
-    b.vel = Vec2(uniform(-5, 5) * 100, uniform(-5, 5) * 100);
-}
-
-Box* spawnBox(Vec2 where)
-{
-  auto box = allocBox();
-  box.pos = where;
-  return box;
-}
-
-Box* allocBox()
-{
-  foreach(ref box; boxes)
-  {
-    if(!box.enable)
-    {
-      box.enable = true;
-      return &box;
-    }
-  }
-
-  return &boxes[0];
-}
-
 void update(Command cmd)
 {
   if(dead)
@@ -128,7 +75,7 @@ void update(Command cmd)
   if(ticks % 100 == 0)
   {
     spawnRandomBox();
-    shakeEnemies();
+    shakeBoxes();
   }
 
   updateBox(&player);
@@ -139,6 +86,31 @@ void update(Command cmd)
   detectCollisions();
 
   ++ticks;
+}
+
+private:
+
+enum SPEED = 30;
+int ticks;
+int bestScore;
+
+void updateBox(Box* box)
+{
+  if(box.pos.x < 0)
+    box.vel.x = abs(box.vel.x);
+
+  if(box.pos.x + SIZE > WIDTH)
+    box.vel.x = -abs(box.vel.x);
+
+  if(box.pos.y < 0)
+    box.vel.y = abs(box.vel.y);
+
+  if(box.pos.y + SIZE > HEIGHT)
+    box.vel.y = -abs(box.vel.y);
+
+  box.pos += box.vel / 10;
+  box.vel *= 9;
+  box.vel /= 10;
 }
 
 void detectCollisions()
@@ -166,27 +138,58 @@ void gameOver()
   printf("Press 'R' to retry\n");
 }
 
-void updateBox(Box* box)
+void shakeBoxes()
 {
-  if(box.pos.x < 0)
-    box.vel.x = abs(box.vel.x);
+  foreach(ref b; boxes)
+    b.vel = Vec2(uniform(-5, 5) * 100, uniform(-5, 5) * 100);
+}
 
-  if(box.pos.x + SIZE > WIDTH)
-    box.vel.x = -abs(box.vel.x);
+void spawnRandomBox()
+{
+  spawnBox(Vec2(uniform(0, WIDTH), uniform(0, HEIGHT)));
+}
 
-  if(box.pos.y < 0)
-    box.vel.y = abs(box.vel.y);
+Box* spawnBox(Vec2 where)
+{
+  auto box = allocBox();
+  box.pos = where;
+  return box;
+}
 
-  if(box.pos.y + SIZE > HEIGHT)
-    box.vel.y = -abs(box.vel.y);
+Box* allocBox()
+{
+  foreach(ref box; boxes)
+  {
+    if(!box.enable)
+    {
+      box.enable = true;
+      return &box;
+    }
+  }
 
-  box.pos += box.vel / 10;
-  box.vel *= 9;
-  box.vel /= 10;
+  return &boxes[0];
+}
+
+bool overlaps(ref Box a, ref Box b)
+{
+  if(a.pos.x + SIZE < b.pos.x)
+    return false;
+
+  if(b.pos.x + SIZE < a.pos.x)
+    return false;
+
+  if(a.pos.y + SIZE < b.pos.y)
+    return false;
+
+  if(b.pos.y + SIZE < a.pos.y)
+    return false;
+
+  return true;
 }
 
 int uniform(int min, int max)
 {
+  import core.stdc.stdlib: rand;
   return rand() % (max - min) + min;
 }
 

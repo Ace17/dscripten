@@ -111,7 +111,7 @@ struct Color
 
 void drawBox(Vec2 pos, Color color)
 {
-  boxColor(pos, Vec2(10, 10), color);
+  boxColor(pos, Vec2(game.SIZE, game.SIZE), color);
 }
 
 void boxColor(Vec2 pos, Vec2 size, Color color)
