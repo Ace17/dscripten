@@ -37,21 +37,23 @@ function buildLdc
     # runFrom $tmpDir/llvm git checkout '33c352b3eda89abc24e7511d9045fa2e499a42e3'
   fi
 
-  if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
-    git clone --depth=1 -b standalone --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm/projects/llvm-cbe
-    # runFrom $tmpDir/llvm/projects/llvm-cbe 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
-  fi
-
   mkdir -p $tmpDir/bin/llvm
   runFrom $tmpDir/bin/llvm ../../llvm/configure --enable-targets=host --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --prefix=$PREFIX_NAT
   runFrom $tmpDir/bin/llvm make -j`nproc`
   runFrom $tmpDir/bin/llvm make -j`nproc` install
-  cp $tmpDir/bin/llvm/Release/bin/llvm-cbe $PREFIX_NAT/bin
 
   mkdir -p $tmpDir/bin/ldc
   runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config" -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" ../../ldc
   runFrom $tmpDir/bin/ldc make -j`nproc`
   runFrom $tmpDir/bin/ldc make -j`nproc` install
+
+  if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
+    git clone --depth=1 -b standalone --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm-cbe
+    # runFrom $tmpDir/llvm/projects/llvm-cbe 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
+    LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config \
+      make -j`nproc` -C $tmpDir/llvm-cbe
+    cp $tmpDir/llvm-cbe/bin/llvm-cbe $PREFIX_NAT/bin
+  fi
 }
 
 # Here, we build and install:
