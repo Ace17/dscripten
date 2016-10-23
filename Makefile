@@ -20,6 +20,7 @@ $(BIN)/full.bc: \
 	$(BIN)/src/main.bc \
 	$(BIN)/src/game.bc \
 	$(BIN)/src/vec.bc \
+	$(BIN)/src/object.bc \
 	$(BIN)/src/minirt.bc
 	@mkdir -p $(dir $@)
 	llvm-link -o "$@" $^
