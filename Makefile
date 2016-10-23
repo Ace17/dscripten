@@ -1,7 +1,7 @@
 BIN?=bin
 EXT?=exe
 
-CFLAGS?="-Iapi/native"
+DFLAGS?="-Iapi/native"
 
 all: $(BIN)/full.$(EXT)
 
@@ -10,11 +10,11 @@ clean:
 
 $(BIN)/full.$(EXT): $(BIN)/full.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
-	$(CC) -O3 -w $^ -o "$@" -lSDL -lSDL_gfx
+	$(CC) $(CFLAGS) $(LDFLAGS) -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
-	ldc2 $(CFLAGS) -boundscheck=off -Isrc $< -c -output-bc -of$@
+	ldc2 $(DFLAGS) -release -boundscheck=off -Isrc $< -c -output-bc -of$@
 
 $(BIN)/full.bc: \
 	$(BIN)/src/main.bc \
