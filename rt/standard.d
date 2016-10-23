@@ -1,11 +1,5 @@
-// minimalistic D runtime
+// minimalistic D standard library
 pragma(LDC_no_moduleinfo);
-
-extern (C) void not_implemented(string file=__FILE__, int line=__LINE__)
-{
-  printf("Not implemented: %s(%d)\n", file.ptr, line);
-  exit(123);
-}
 
 extern(C) int printf(const(char)*, ...);
 extern(C) void exit(int);

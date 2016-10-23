@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,6 +19,12 @@ void _d_allocclass()
 void _d_throw_exception()
 {
   exit(33);
+}
+
+void not_implemented(const char* file, int line)
+{
+  printf("Not implemented: %s(%d)\n", file, line);
+  exit(123);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

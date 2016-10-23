@@ -1,10 +1,12 @@
+// minimalistic D runtime
+// stripped-down version of the official one
 module object;
 
 pragma(LDC_no_moduleinfo);
 
 private
 {
-  extern (C) void not_implemented(string file=__FILE__, int line=__LINE__) pure @nogc @safe nothrow;
+  extern (C) void not_implemented(const char* file=__FILE__.ptr, int line=__LINE__) pure @nogc @safe nothrow;
 }
 
 version(D_LP64)

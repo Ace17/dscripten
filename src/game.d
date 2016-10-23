@@ -8,7 +8,7 @@
 pragma(LDC_no_moduleinfo);
 
 import vec;
-import minirt;
+import standard;
 
 enum WIDTH = 512;
 enum HEIGHT = 512;
