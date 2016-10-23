@@ -1,4 +1,5 @@
 // minimalistic D runtime
+pragma(LDC_no_moduleinfo);
 import core.stdc.stdio;
 import core.stdc.stdlib;
 import std.conv: emplace;
@@ -74,18 +75,5 @@ struct vector (T)
 private:
   T* buffer;
   int len;
-}
-
-string enumToString(Enum)(Enum val)
-{
-  import std.traits;
-  final switch(val)
-  {
-    foreach(member; EnumMembers!Enum)
-    {
-    case member:
-      return __traits (allMembers, Enum)[member].stringof[1 .. $ - 1];
-    }
-  }
 }
 

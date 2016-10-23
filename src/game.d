@@ -5,6 +5,8 @@
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  */
+pragma(LDC_no_moduleinfo);
+
 import core.stdc.stdio;
 import std.algorithm;
 
@@ -51,9 +53,6 @@ void init()
       GREEN,
       BLUE,
     }
-
-    auto c = COLOR.GREEN;
-    printf("%s\n", enumToString(c).ptr);
   }
 
   boxes[] = Box();

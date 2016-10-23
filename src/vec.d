@@ -1,3 +1,4 @@
+pragma(LDC_no_moduleinfo);
 /*
  * Copyright (C) 2016 - Sebastien Alaiwan
  * This program is free software: you can redistribute it and/or modify
