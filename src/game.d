@@ -48,34 +48,6 @@ void init()
 
   for(int i = 0; i < 2; ++i)
     spawnRandomBox();
-
-  testClass();
-}
-
-void testClass()
-{
-  printf("HELLO\n");
-  ubyte[128] buffer;
-  auto c = newObject!C;
-  c.f();
-  c = newObject!D;
-  c.f();
-}
-
-class C
-{
-  void f()
-  {
-    printf("YO: C\n");
-  }
-}
-
-class D : C
-{
-  override void f()
-  {
-    printf("YO: D\n");
-  }
 }
 
 void update(Command cmd)

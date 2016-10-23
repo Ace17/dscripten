@@ -3,18 +3,25 @@ EXT?=exe
 
 DFLAGS?="-Iapi/native"
 
-all: $(BIN)/full.$(EXT)
+all: $(BIN)/full.$(EXT) $(BIN)/test-full.$(EXT)
 
 clean:
 	rm -rf $(BIN)
 
-$(BIN)/full.$(EXT): $(BIN)/full.cbe.c rt/runtime.c
+$(BIN)/%.$(EXT): $(BIN)/%.cbe.c rt/runtime.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(LDFLAGS) -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
 	ldc2 $(DFLAGS) -release -boundscheck=off -Isrc -Irt $< -c -output-bc -of$@
+
+$(BIN)/test-full.bc: \
+	$(BIN)/rt/test.bc \
+	$(BIN)/rt/standard.bc \
+	$(BIN)/rt/object.bc
+	@mkdir -p $(dir $@)
+	llvm-link -o "$@" $^
 
 $(BIN)/full.bc: \
 	$(BIN)/src/main.bc \

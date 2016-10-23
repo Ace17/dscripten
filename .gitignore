@@ -1,2 +1,4 @@
 /config
 /bin
+*.swp
+.session.vim
