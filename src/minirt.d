@@ -1,6 +1,5 @@
 // minimalistic D runtime
 pragma(LDC_no_moduleinfo);
-import std.traits: isAbstractClass;
 
 extern (C) void not_implemented(string file=__FILE__, int line=__LINE__)
 {
@@ -113,8 +112,6 @@ if (is(UT == Unqual!T))
   {
     static assert (is(typeof({static T i;})),
         convFormat("Cannot emplace a %1$s because %1$s.this() is annotated with @disable.", T.stringof));
-    static if (is(T == class)) static assert (!isAbstractClass!T,
-        T.stringof ~ " is abstract and it can't be emplaced");
     emplaceInitializer(chunk);
   }
   else static if (
@@ -240,9 +237,6 @@ Returns: A pointer to the newly constructed object.
   T emplace(T, Args...)(void[] chunk, auto ref Args args)
 if (is(T == class))
 {
-  static assert (!isAbstractClass!T, T.stringof ~
-      " is abstract and it can't be emplaced");
-
   enum classSize = __traits(classInstanceSize, T);
   auto result = cast(T) chunk.ptr;
 
