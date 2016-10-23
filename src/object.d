@@ -1,28 +1,10 @@
-/**
- * Forms the symbols available to all D programs. Includes Object, which is
- * the root of the class object hierarchy.  This module is implicitly
- * imported.
- * Macros:
- *      WIKI = Object
- *
- * Copyright: Copyright Digital Mars 2000 - 2011.
- * License:   $(WEB www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
- * Authors:   Walter Bright, Sean Kelly
- */
-
-/*          Copyright Digital Mars 2000 - 2011.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- */
 module object;
+
 pragma(LDC_no_moduleinfo);
 
 private
 {
   extern (C) void not_implemented(string file=__FILE__, int line=__LINE__) pure @nogc @safe nothrow;
-
-
 }
 
 version(D_LP64)
@@ -35,11 +17,6 @@ else
   alias uint  size_t;
   alias int   ptrdiff_t;
 }
-
-alias ptrdiff_t sizediff_t; //For backwards compatibility only.
-
-alias size_t hash_t; //For backwards compatibility only.
-alias bool equals_t; //For backwards compatibility only.
 
 alias immutable(char)[]  string;
 alias immutable(wchar)[] wstring;
@@ -315,7 +292,7 @@ class TypeInfo_Pointer : TypeInfo
 
 class TypeInfo_Array : TypeInfo
 {
-  override string toString() const 
+  override string toString() const
   {
     not_implemented();
     return "";
@@ -501,8 +478,8 @@ class TypeInfo_AssociativeArray : TypeInfo
 
 class TypeInfo_Vector : TypeInfo
 {
-  override string toString() const 
-  { 
+  override string toString() const
+  {
     not_implemented();
     return "";
   }
