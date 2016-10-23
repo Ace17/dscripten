@@ -1,8 +1,8 @@
 // minimalistic D runtime
 pragma(LDC_no_moduleinfo);
-import core.stdc.stdio;
-import core.stdc.stdlib;
 import std.conv: emplace;
+
+extern(C) int printf(const(char)*, ...);
 
 T* createStruct(T, Args...)(auto ref Args args)
 {

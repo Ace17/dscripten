@@ -7,8 +7,6 @@
  */
 pragma(LDC_no_moduleinfo);
 
-extern(C) int printf(const(char)*, ...);
-
 import vec;
 import minirt;
 
