@@ -1,9 +1,6 @@
 // minimalistic D runtime
 pragma(LDC_no_moduleinfo);
-pragma(LDC_no_typeinfo):
-import core.stdc.stdio;
-import core.stdc.stdlib;
-import std.traits: isAbstractClass, classInstanceAlignment;
+import std.traits: isAbstractClass;
 
 extern (C) void not_implemented(string file=__FILE__, int line=__LINE__)
 {
@@ -12,6 +9,8 @@ extern (C) void not_implemented(string file=__FILE__, int line=__LINE__)
 }
 
 extern(C) int printf(const(char)*, ...);
+extern(C) void exit(int);
+extern(C) void* malloc(size_t);
 
 T* createStruct(T, Args...)(auto ref Args args)
 {
