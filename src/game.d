@@ -7,8 +7,7 @@
  */
 pragma(LDC_no_moduleinfo);
 
-import core.stdc.stdio;
-import std.algorithm;
+extern(C) int printf(const(char)*, ...);
 
 import vec;
 import minirt;
@@ -190,5 +189,10 @@ int uniform(int min, int max)
 {
   import core.stdc.stdlib: rand;
   return rand() % (max - min) + min;
+}
+
+auto max(T)(T a, T b)
+{
+  return a > b ? a : b;
 }
 

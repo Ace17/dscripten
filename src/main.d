@@ -6,7 +6,6 @@
  * License, or (at your option) any later version.
  */
 pragma(LDC_no_moduleinfo);
-import core.stdc.stdio;
 
 import sdl;
 import vec;
