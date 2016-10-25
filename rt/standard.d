@@ -4,6 +4,8 @@ pragma(LDC_no_moduleinfo);
 extern(C) int printf(const(char)*, ...);
 extern(C) void exit(int);
 extern(C) void* malloc(size_t);
+extern(C) void* calloc(int, size_t);
+extern(C) void free(void*);
 
 T* createStruct(T, Args...)(auto ref Args args)
 {
@@ -17,7 +19,7 @@ T newObject(T, Args...)(Args args)
   enum classSize = __traits(classInstanceSize, T);
 
   void* chunk = malloc(classSize);
-  
+
   return emplace!T(chunk[0 .. classSize]);
 }
 
@@ -99,8 +101,7 @@ Furthermore, emplaceRef optionally takes a type paremeter, which specifies
 the type we want to build. This helps to build qualified objects on mutable
 buffer, without breaking the type system with unsafe casts.
   +/
-  package void emplaceRef(T, UT, Args...)(ref UT chunk, auto ref Args args)
-if (is(UT == Unqual!T))
+void emplaceRef(T, UT, Args...)(ref UT chunk, auto ref Args args)
 {
   static if (args.length == 0)
   {
@@ -162,24 +163,13 @@ if (is(UT == Unqual!T))
         convFormat("%s cannot be emplaced from %s.", T.stringof, Args[].stringof));
   }
 }
-// ditto
-  package void emplaceRef(UT, Args...)(ref UT chunk, auto ref Args args)
-if (is(UT == Unqual!UT))
-{
-  emplaceRef!(UT, UT)(chunk, args);
-}
 
 //emplace helper functions
-private void emplaceInitializer(T)(ref T chunk) @trusted pure nothrow
+void emplaceInitializer(T)(ref T chunk) @trusted pure nothrow
 {
-  static if (!hasElaborateAssign!T && isAssignable!T)
-    chunk = T.init;
-  else
-  {
-    import core.stdc.string : memcpy;
-    static immutable T init = T.init;
-    memcpy(&chunk, &init, T.sizeof);
-  }
+  import core.stdc.string : memcpy;
+  static immutable T init = T.init;
+  memcpy(&chunk, &init, T.sizeof);
 }
 
 // emplace
@@ -251,25 +241,5 @@ if (is(T == class))
         ~ T.stringof ~ " with arguments " ~ Args.stringof);
   }
   return result;
-}
-
-/**
-  Given a raw memory area $(D chunk), constructs an object of non-$(D
-  class) type $(D T) at that address. The constructor is passed the
-  arguments $(D args), if any. The $(D chunk) must be as least as large
-  as $(D T) needs and should have an alignment multiple of $(D T)'s
-  alignment.
-
-  This function can be $(D @trusted) if the corresponding constructor of
-  $(D T) is $(D @safe).
-
-Returns: A pointer to the newly constructed object.
- */
-  T* emplace(T, Args...)(void[] chunk, auto ref Args args)
-if (!is(T == class))
-{
-  testEmplaceChunk(chunk, T.sizeof, T.alignof, T.stringof);
-  emplaceRef!(T, Unqual!T)(*cast(Unqual!T*) chunk.ptr, args);
-  return cast(T*) chunk.ptr;
 }
 

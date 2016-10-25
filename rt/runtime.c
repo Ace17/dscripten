@@ -62,7 +62,6 @@ int main()
 
 void quit()
 {
-  printf("Goodbye!\n");
   mustQuit = 1;
 }
 
