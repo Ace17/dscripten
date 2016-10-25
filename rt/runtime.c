@@ -2,24 +2,6 @@
 #include <stdlib.h>
 
 ///////////////////////////////////////////////////////////////////////////////
-// make link work. will most probably crash if actually used during runtime.
-int _d_dso_registry;
-int _d_assert_msg;
-int _d_switch_error;
-
-// can't get rid of those, seems to be refered to by compiler-inserted code
-int _D10TypeInfo_v6__initZ;
-int _D10TypeInfo_m6__initZ;
-
-void _d_allocclass()
-{
-  exit(22);
-}
-
-void _d_throw_exception()
-{
-  exit(33);
-}
 
 void not_implemented(const char* file, int line)
 {
@@ -27,6 +9,15 @@ void not_implemented(const char* file, int line)
   exit(123);
 }
 
+#define NOT_IMPLEMENTED not_implemented(__FILE__, __LINE__)
+
+///////////////////////////////////////////////////////////////////////////////
+// make link work. will most probably crash if actually used during runtime.
+// can't get rid of those, seems to be refered-to by compiler-inserted code
+int _D10TypeInfo_v6__initZ;
+int _D10TypeInfo_m6__initZ;
+void _d_allocclass() { NOT_IMPLEMENTED; }
+void _d_throw_exception() { NOT_IMPLEMENTED; }
 ///////////////////////////////////////////////////////////////////////////////
 
 void startup();
