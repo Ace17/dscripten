@@ -45,6 +45,17 @@ void testClass()
     }
   }
 
+  // empty class
+  {
+    static class E
+    {
+    }
+
+    auto o = newObject!E;
+    check(o !is null);
+    deleteObject(o);
+  }
+
   // construction/destruction
   {
     auto c = newObject!C;
