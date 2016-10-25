@@ -26,6 +26,18 @@ void testClass()
   static class C
   {
     static bool called;
+    static bool constructed;
+    static bool destroyed;
+
+    this()
+    {
+      constructed = true;
+    }
+
+    ~this()
+    {
+      destroyed = true;
+    }
 
     void f()
     {
@@ -33,9 +45,26 @@ void testClass()
     }
   }
 
+  // construction/destruction
+  {
+    auto c = newObject!C;
+    check(C.constructed);
+    c.f();
+    check(C.called);
+
+    deleteObject(c);
+    check(C.destroyed);
+  }
+
   static class D : C
   {
+    static bool derivedObjectConstructed;
     static bool called;
+
+    this()
+    {
+      derivedObjectConstructed = true;
+    }
 
     override void f()
     {
@@ -43,13 +72,15 @@ void testClass()
     }
   }
 
-  auto c = newObject!C;
-  c.f();
-  check(C.called);
+  // polymorphism
+  {
+    C c = newObject!D;
+    c.f();
+    check(D.called);
+    check(D.derivedObjectConstructed);
 
-  c = newObject!D;
-  c.f();
-  check(D.called);
+    deleteObject(c);
+  }
 }
 
 void testStruct()
@@ -73,13 +104,13 @@ void testStruct()
     }
   }
 
-  auto s = createStruct!S(123);
+  auto s = newStruct!S(123);
   check(s.initialized);
   check(s.called);
   check(s.arg == 123);
   check(!s.destroyed);
 
-  destroyStruct(s);
+  deleteStruct(s);
   check(s.destroyed);
 }
 

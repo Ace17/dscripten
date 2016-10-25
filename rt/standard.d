@@ -7,11 +7,17 @@ extern(C) void* malloc(size_t);
 extern(C) void* calloc(int, size_t);
 extern(C) void free(void*);
 
-T* createStruct(T, Args...)(auto ref Args args)
+T* newStruct(T, Args...)(auto ref Args args)
 {
   auto r = cast(T*) calloc(1, T.sizeof);
   emplace!T(r, args);
   return r;
+}
+
+void deleteStruct(T)(T * r)
+{
+  .destroy(*r);
+  free(r);
 }
 
 T newObject(T, Args...)(Args args)
@@ -23,10 +29,10 @@ T newObject(T, Args...)(Args args)
   return emplace!T(chunk[0 .. classSize]);
 }
 
-void destroyStruct(T)(T * r)
+void deleteObject(T)(T o) if(is(T == class))
 {
-  .destroy(*r);
-  free(r);
+  o.__dtor();
+  free(cast(void*)o);
 }
 
 struct vector (T)
