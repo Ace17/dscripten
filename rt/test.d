@@ -115,14 +115,16 @@ void testStruct()
     }
   }
 
-  auto s = newStruct!S(123);
-  check(s.initialized);
-  check(s.called);
-  check(s.arg == 123);
-  check(!s.destroyed);
+  {
+    auto s = newStruct!S(123);
+    check(s.initialized);
+    check(s.called);
+    check(s.arg == 123);
+    check(!s.destroyed);
 
-  deleteStruct(s);
-  check(s.destroyed);
+    deleteStruct(s);
+  }
+  check(S.destroyed);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
