@@ -1,6 +1,6 @@
 # dscripten
 An example of D to asmjs using Emscripten
- 
+
 Authors
 =======
 
@@ -28,21 +28,26 @@ Usage
 
   This will take some time, as we need to build LLVM ... twice.
 
+* Now configure emscripten.
+  This will create a '.emscripten' configuration file in your home,
+  containing the path to LLVM 3.9svn (aka 'fastcomp', which implements the JSBackend).
+  "emcc" will use this path to find its Javascript-enabled clang and llc.
+
+  ```
+  rm -f ~/.emscripten
+  EMMAKEN_JUST_CONFIGURE=1 PATH=/tmp/toolchains/llvm-js/bin:$PATH /tmp/toolchains/emscripten/emcc
+  ```
+
 * Add some directories to your PATH
 
-  First, the native LLVM 3.8 toolchain (providing ldc2 and llvm-cbe)
-  ```
-  $ export PATH=/tmp/toolchains/llvm-native/bin:$PATH
-  ```
-
-  Then, the JSBackend LLVM 3.9svn toolchain (aka 'fastcomp') (used by emscripten)
-  ```
-  $ export PATH=/tmp/toolchains/llvm-js/bin:$PATH
-  ```
-
-  Finally, the python 'emcc' tools, which rely on the JSBackend LLVM toolchain
+  First, add the python 'emcc' tool family, which relies on the JSBackend LLVM toolchain
   ```
   $ export PATH=/tmp/toolchains/emscripten:$PATH
+  ```
+
+  Then, the native LLVM 3.9 toolchain (providing ldc2 and llvm-cbe)
+  ```
+  $ export PATH=/tmp/toolchains/llvm-native/bin:$PATH
   ```
 
 * Check your PATH:
@@ -50,12 +55,12 @@ Usage
   Here's what you should get:
 
   ```
-  $ which -a llvm-config                                                                                                                                                                                                                                                                ~/projects/dscripten
-  /tmp/toolchains/llvm-js/bin/llvm-config
+  $ which -a llvm-config
   /tmp/toolchains/llvm-native/bin/llvm-config
   ```
 
-  If the llvm-config don't appear in this order, emcc will not work.
+  If you have more than one llvm-config appearing in this list, you're asking
+  for trouble and the build might not work.
 
 * Run the build script (it just sets some variables before calling the makefile)
 

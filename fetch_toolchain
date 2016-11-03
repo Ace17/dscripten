@@ -22,9 +22,9 @@ function main
 }
 
 # Here, we build and install:
-# - vanilla LLVM (3.8)
+# - vanilla LLVM (3.9)
 # - ldc D2 compiler (which requires LLVM >= 3.5)
-# - llvm-cbe, aka the "resurrected C backend" (which requires LLVM == 3.8)
+# - llvm-cbe, aka the "resurrected C backend" (which requires LLVM == 3.9)
 function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
@@ -33,23 +33,31 @@ function buildLdc
   fi
 
   if [ ! -d $tmpDir/llvm ] ; then
-    git clone --depth=1 -b release_38 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
+    git clone --depth=1 -b release_39 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
     # runFrom $tmpDir/llvm git checkout '33c352b3eda89abc24e7511d9045fa2e499a42e3'
   fi
 
   mkdir -p $tmpDir/bin/llvm
-  runFrom $tmpDir/bin/llvm ../../llvm/configure --enable-targets=host --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --prefix=$PREFIX_NAT
+  runFrom $tmpDir/bin/llvm cmake \
+    -G "Unix Makefiles" \
+    -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" \
+    -D "CMAKE_BUILD_TYPE=Release" \
+    -D "LLVM_TARGETS_TO_BUILD=host" \
+    -D "LLVM_ENABLE_ASSERTIONS=off" \
+    -D "LLVM_ENABLE_BACKTRACES=off" \
+    -D "LLVM_ENABLE_WARNINGS=off" \
+    ../../llvm
   runFrom $tmpDir/bin/llvm make -j`nproc`
   runFrom $tmpDir/bin/llvm make -j`nproc` install
 
   mkdir -p $tmpDir/bin/ldc
-  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config" -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" ../../ldc
+  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" -D "LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config" ../../ldc
   runFrom $tmpDir/bin/ldc make -j`nproc`
   runFrom $tmpDir/bin/ldc make -j`nproc` install
 
   if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
     git clone --depth=1 -b standalone --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm-cbe
-    # runFrom $tmpDir/llvm/projects/llvm-cbe 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
+    # runFrom $tmpDir/llvm/projects/llvm-cbe git checkout 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
     LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config \
       make -j`nproc` -C $tmpDir/llvm-cbe
     cp $tmpDir/llvm-cbe/bin/llvm-cbe $PREFIX_NAT/bin
@@ -58,7 +66,7 @@ function buildLdc
 
 # Here, we build and install:
 # - 'fastcomp' LLVM
-# - 'fastcomp' clang fronted (which requires 'fastcomp' LLVM)
+# - 'fastcomp' clang frontend (which requires 'fastcomp' LLVM)
 # - emscripten (python wrapper scripts + header files + pkg-config files)
 function buildEmscripten
 {
@@ -67,9 +75,10 @@ function buildEmscripten
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
     # runFrom $PREFIX_EMS git checkout '07b87426f898d6e9c677db291d9088c839197291'
 
-    # fake pkg-config files to keep the build systems happy
+    # fake pkg-config files to keep the build systems of user projects happy
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
+    cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
   fi
 
   # the asmjs backend
