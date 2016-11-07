@@ -56,7 +56,7 @@ function buildLdc
   runFrom $tmpDir/bin/ldc make -j`nproc` install
 
   if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
-    git clone --depth=1 -b standalone --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm-cbe
+    git clone --depth=1 -b master --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm-cbe
     # runFrom $tmpDir/llvm/projects/llvm-cbe git checkout 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
     LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config \
       make -j`nproc` -C $tmpDir/llvm-cbe
