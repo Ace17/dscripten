@@ -79,6 +79,7 @@ function buildEmscripten
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
+    generateSdl2Pc > $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc
   fi
 
   # the asmjs backend
@@ -97,6 +98,15 @@ function buildEmscripten
   runFrom $tmpDir/bin/emscripten-llvm ../../emscripten-llvm/configure --enable-targets=host,js --disable-timestamps --disable-jit --enable-optimized --disable-assertions --enable-bindings=none --disable-docs --prefix=$PREFIX_JS
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc`
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc` install
+}
+
+function generateSdl2Pc
+{
+  echo "Name: sdl2"
+  echo "Description: SDL2"
+  echo "Version: 1.2.15"
+  echo "Cflags: -s USE_SDL=2"
+  echo "Libs: -s USE_SDL=2"
 }
 
 function runFrom
