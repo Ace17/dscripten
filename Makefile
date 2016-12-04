@@ -9,7 +9,7 @@ all: $(BIN)/full.$(EXT) $(BIN)/test-full.$(EXT)
 clean:
 	rm -rf $(BIN)
 
-$(BIN)/%.$(EXT): $(BIN)/full.bc
+$(BIN)/%.$(EXT): $(BIN)/%.bc
 	@mkdir -p $(dir $@)
 	$(LINK) $(CFLAGS) $(LDFLAGS) -w $^ -o "$@" -lSDL -lSDL_gfx
 

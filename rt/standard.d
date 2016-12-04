@@ -6,6 +6,7 @@ extern(C) void exit(int);
 extern(C) void* malloc(size_t);
 extern(C) void* calloc(int, size_t);
 extern(C) void free(void*);
+extern(C) void* memcpy(void*, const(void)*, size_t) pure nothrow;
 
 T* newStruct(T, Args...)(auto ref Args args)
 {
@@ -176,7 +177,6 @@ void emplaceRef(T, UT, Args...)(ref UT chunk, auto ref Args args)
 //emplace helper functions
 void emplaceInitializer(T)(ref T chunk) @trusted pure nothrow
 {
-  import core.stdc.string : memcpy;
   static immutable T init = T.init;
   memcpy(&chunk, &init, T.sizeof);
 }

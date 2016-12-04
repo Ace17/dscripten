@@ -1313,3 +1313,43 @@ class Error : Throwable
   Throwable   bypassedException;
 }
 
+void destroy(T)(T obj) if (is(T == class))
+{
+  rt_finalize(cast(void*)obj);
+}
+
+void destroy(T)(T obj) if (is(T == interface))
+{
+  destroy(cast(Object)obj);
+}
+
+void destroy(T)(ref T obj) if (is(T == struct))
+{
+  _destructRecurse(obj);
+  auto buf = (cast(ubyte*) &obj)[0 .. T.sizeof];
+  auto init = cast(ubyte[])typeid(T).init();
+  if (init.ptr is null) // null ptr means initialize to 0s
+    buf[] = 0;
+  else
+    buf[] = init[];
+}
+
+  private void _destructRecurse(S)(ref S s)
+if (is(S == struct))
+{
+  static if (__traits(hasMember, S, "__xdtor") &&
+      // Bugzilla 14746: Check that it's the exact member of S.
+      __traits(isSame, S, __traits(parent, s.__xdtor)))
+    s.__xdtor();
+}
+
+private void _destructRecurse(E, size_t n)(ref E[n] arr)
+{
+  // import core.internal.traits : hasElaborateDestructor;
+  // static if (hasElaborateDestructor!E)
+  {
+    foreach_reverse (ref elem; arr)
+      _destructRecurse(elem);
+  }
+}
+
