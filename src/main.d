@@ -58,16 +58,16 @@ game.Command processInput()
   else
     debounce = true;
 
-  if(keyboard[SDLK_a] || keyboard[SDLK_q] || keyboard[SDLK_LEFT])
+  if(keyboard[SDLK_LEFT])
     cmd.dir.x += -1;
 
-  if(keyboard[SDLK_d] || keyboard[SDLK_RIGHT])
+  if(keyboard[SDLK_RIGHT])
     cmd.dir.x += +1;
 
-  if(keyboard[SDLK_w] || keyboard[SDLK_z] || keyboard[SDLK_UP])
+  if(keyboard[SDLK_UP])
     cmd.dir.y += -1;
 
-  if(keyboard[SDLK_s] || keyboard[SDLK_DOWN])
+  if(keyboard[SDLK_DOWN])
     cmd.dir.y += +1;
 
   if(keyboard[SDLK_SPACE])
