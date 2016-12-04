@@ -26,7 +26,31 @@ Usage
   $ ./fetch_toolchains
   ```
 
-  This will take some time, as we need to build LLVM ... twice.
+  This will take some time, as it will build LLVM-fastcomp and a patched ldc2.
+
+* Add some directories to your PATH
+
+  First, add the JSBackend LLVM toolchain. This one provides ldc2, clang, llc.
+  ```
+  $ export PATH=/tmp/toolchains/llvm-js/bin:$PATH
+  ```
+
+  Then, add Emscripten itself, i.e the python 'emcc' tool family. This relies on the JSBackend LLVM toolchain.
+  ```
+  $ export PATH=/tmp/toolchains/emscripten:$PATH
+  ```
+
+* Check your PATH:
+
+  Here's what you should get:
+
+  ```
+  $ which -a llvm-config
+  /tmp/toolchains/llvm-js/bin/llvm-config
+  ```
+
+  If you have more than one llvm-config appearing in this list, you're asking
+  for trouble and the build might not work.
 
 * Now configure emscripten.
   This will create a '.emscripten' configuration file in your home,
@@ -38,37 +62,13 @@ Usage
   EMMAKEN_JUST_CONFIGURE=1 PATH=/tmp/toolchains/llvm-js/bin:$PATH /tmp/toolchains/emscripten/emcc
   ```
 
-* Add some directories to your PATH
-
-  First, add the python 'emcc' tool family, which relies on the JSBackend LLVM toolchain
-  ```
-  $ export PATH=/tmp/toolchains/emscripten:$PATH
-  ```
-
-  Then, the native LLVM 3.9 toolchain (providing ldc2 and llvm-cbe)
-  ```
-  $ export PATH=/tmp/toolchains/llvm-native/bin:$PATH
-  ```
-
-* Check your PATH:
-
-  Here's what you should get:
-
-  ```
-  $ which -a llvm-config
-  /tmp/toolchains/llvm-native/bin/llvm-config
-  ```
-
-  If you have more than one llvm-config appearing in this list, you're asking
-  for trouble and the build might not work.
-
 * Run the build script (it just sets some variables before calling the makefile)
 
   ```
   $ ./build_asmjs
   ```
 
-  (If it fails, try removing ~/.emscripten (or setting EM_CONFIG to anything else))
+  (If it fails, try removing ~/.emscripten, or setting EM_CONFIG to anything else)
 
 * Enjoy the result:
 
