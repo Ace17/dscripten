@@ -38,6 +38,8 @@ int main()
 
 #else
 
+void SDL_Delay(int);
+
 int main()
 {
   startup();

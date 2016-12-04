@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-export CC="clang"
+export LINK="clang"
 export BIN="bin/native"
 export PKG_CONFIG_LIBDIR="$PWD/api/native"
 

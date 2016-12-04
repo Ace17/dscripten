@@ -2,6 +2,7 @@ BIN?=bin
 EXT?=exe
 
 DFLAGS?="-Iapi/native"
+LINK?=clang
 
 all: $(BIN)/full.$(EXT) $(BIN)/test-full.$(EXT)
 
@@ -10,7 +11,7 @@ clean:
 
 $(BIN)/%.$(EXT): $(BIN)/full.bc
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(LDFLAGS) -w $^ -o "$@" -lSDL -lSDL_gfx
+	$(LINK) $(CFLAGS) $(LDFLAGS) -w $^ -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
