@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 
-# This script downloads, builds and deploys a D-to-LLVM-to-C-to-ASMJS toolchain.
-# It's a pity we have to build LLVM twice, but LDC, emscripten-fastcomp, and llvm-cbe have decided not to be compatible.
+# This script downloads, builds and deploys a D-to-LLVM-to-ASMJS toolchain.
 # Usage:
 # $ ./fetch_toolchain
-# A painfully long time after, you've to a full toolchain in '/tmp/toolchains/emsd'
+# A painfully long time after, you've got a full toolchain in '/tmp/toolchains/'
 
 set -euo pipefail
 
-readonly PREFIX_NAT=/tmp/toolchains/llvm-native
 readonly PREFIX_JS=/tmp/toolchains/llvm-js
 readonly PREFIX_EMS=/tmp/toolchains/emscripten
 readonly tmpDir=/tmp/emsd-source
+readonly scriptDir=$(realpath $(dirname $0))
 
 function main
 {
@@ -29,39 +28,14 @@ function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
     git clone --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
-    # runFrom $tmpDir/ldc git checkout 'be63398346f395814ddc73546e66821888c2fffd'
+    runFrom $tmpDir/ldc git checkout '9566fc58c800aad27b13f2c8d1f4a63b299e0e3e'
+    patch -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
   fi
-
-  if [ ! -d $tmpDir/llvm ] ; then
-    git clone --depth=1 -b release_39 --single-branch https://github.com/llvm-mirror/llvm.git $tmpDir/llvm
-    # runFrom $tmpDir/llvm git checkout '33c352b3eda89abc24e7511d9045fa2e499a42e3'
-  fi
-
-  mkdir -p $tmpDir/bin/llvm
-  runFrom $tmpDir/bin/llvm cmake \
-    -G "Unix Makefiles" \
-    -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" \
-    -D "CMAKE_BUILD_TYPE=Release" \
-    -D "LLVM_TARGETS_TO_BUILD=host" \
-    -D "LLVM_ENABLE_ASSERTIONS=off" \
-    -D "LLVM_ENABLE_BACKTRACES=off" \
-    -D "LLVM_ENABLE_WARNINGS=off" \
-    ../../llvm
-  runFrom $tmpDir/bin/llvm make -j`nproc`
-  runFrom $tmpDir/bin/llvm make -j`nproc` install
 
   mkdir -p $tmpDir/bin/ldc
-  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "CMAKE_INSTALL_PREFIX=$PREFIX_NAT" -D "LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config" ../../ldc
+  runFrom $tmpDir/bin/ldc cmake -G "Unix Makefiles" -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" ../../ldc
   runFrom $tmpDir/bin/ldc make -j`nproc`
   runFrom $tmpDir/bin/ldc make -j`nproc` install
-
-  if [ ! -d $tmpDir/llvm/projects/llvm-cbe ] ; then
-    git clone --depth=1 -b master --single-branch https://github.com/Ace17/llvm-cbe.git $tmpDir/llvm-cbe
-    # runFrom $tmpDir/llvm/projects/llvm-cbe git checkout 'fa6d68e7ee3e9219ced0fa95de687c4c6632ddda'
-    LLVM_CONFIG=$PREFIX_NAT/bin/llvm-config \
-      make -j`nproc` -C $tmpDir/llvm-cbe
-    cp $tmpDir/llvm-cbe/bin/llvm-cbe $PREFIX_NAT/bin
-  fi
 }
 
 # Here, we build and install:

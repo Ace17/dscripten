@@ -173,9 +173,10 @@ bool overlaps(ref Box a, ref Box b)
   return true;
 }
 
+extern(C) int rand();
+
 int uniform(int min, int max)
 {
-  import core.stdc.stdlib: rand;
   return rand() % (max - min) + min;
 }
 

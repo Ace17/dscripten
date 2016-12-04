@@ -7,6 +7,7 @@ pragma(LDC_no_moduleinfo);
 private
 {
   extern (C) void not_implemented(const char* file=__FILE__.ptr, int line=__LINE__) pure @nogc @safe nothrow;
+  extern(C) int strlen(const char*) nothrow pure;
 }
 
 version(D_LP64)
@@ -1023,8 +1024,6 @@ struct ModuleInfo
 const:
   private void* addrOf(int flag) nothrow pure
   {
-    import core.stdc.string : strlen;
-
     void* p = cast(void*)&this + ModuleInfo.sizeof;
 
     if (flags & MItlsctor)
@@ -1143,8 +1142,6 @@ const:
   {
     if (true || flags & MIname) // always available for now
     {
-      import core.stdc.string : strlen;
-
       auto p = cast(immutable char*)addrOf(MIname);
       return p[0 .. strlen(p)];
     }

@@ -5,6 +5,8 @@ set -e
 export BIN="bin/asmjs"
 export EXT="html"
 export CC="emcc"
+export CFLAGS="--target=asmjs-unknown-emscripten -S "
+export DFLAGS="-Iapi/ems -mtriple=asmjs-unknown-emscripten "
 
-make -j`nproc` DFLAGS="-Iapi/ems " CFLAGS="-O3 "
+make -j`nproc` "DFLAGS=$DFLAGS" "$@"
 
