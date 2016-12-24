@@ -1,16 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8b541a3..9e0f896 100644
+index 8b541a3e..5d56483d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -24,6 +24,7 @@ endif()
- find_package(LLVM 3.5 REQUIRED
-     all-targets analysis asmparser asmprinter bitreader bitwriter codegen core debuginfocodeview debuginfodwarf debuginfomsf debuginfopdb globalisel instcombine ipa ipo instrumentation irreader linker lto mc mcdisassembler mcparser objcarcopts object option profiledata scalaropts selectiondag support tablegen target transformutils vectorize ${EXTRA_LLVM_MODULES})
- math(EXPR LDC_LLVM_VER ${LLVM_VERSION_MAJOR}*100+${LLVM_VERSION_MINOR})
-+set(LDC_LLVM_VER 308)
- # Remove LLVMTableGen library from list of libraries
- string(REGEX MATCH "^-.*LLVMTableGen[^;]*;|;-.*LLVMTableGen[^;]*" LLVM_TABLEGEN_LIBRARY "${LLVM_LIBRARIES}")
- string(REGEX REPLACE "^-.*LLVMTableGen[^;]*;|;-.*LLVMTableGen[^;]*" "" LLVM_LIBRARIES "${LLVM_LIBRARIES}")
-@@ -686,11 +687,11 @@ add_subdirectory(tools)
+@@ -686,11 +686,6 @@ add_subdirectory(tools)
  # Test and runtime targets. Note that enable_testing() is order-sensitive!
  #
  enable_testing()
@@ -19,15 +11,10 @@ index 8b541a3..9e0f896 100644
 -    add_subdirectory(tests/d2)
 -endif()
 -add_subdirectory(tests)
-+# add_subdirectory(runtime)
-+# if(D_VERSION EQUAL 2)
-+#     add_subdirectory(tests/d2)
-+# endif()
-+# add_subdirectory(tests)
  
  #
  # Install target.
-@@ -704,7 +705,7 @@ if(${BUILD_SHARED})
+@@ -704,7 +699,7 @@ if(${BUILD_SHARED})
      # as well, for the time being this just bloats the normal packages.
      install(TARGETS ${LDC_LIB} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
  endif()
@@ -37,7 +24,7 @@ index 8b541a3..9e0f896 100644
  if(MSVC)
      install(DIRECTORY vcbuild/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.bat")
 diff --git a/cmake/Modules/FindLLVM.cmake b/cmake/Modules/FindLLVM.cmake
-index 2b322f1..00bf833 100644
+index 2b322f15..00bf8333 100644
 --- a/cmake/Modules/FindLLVM.cmake
 +++ b/cmake/Modules/FindLLVM.cmake
 @@ -214,6 +214,12 @@ else()
@@ -54,10 +41,20 @@ index 2b322f1..00bf833 100644
      if(NOT ${LLVM_VERSION_STRING} MATCHES "^3\\.[0-4][\\.0-9A-Za-z]*")
          # In LLVM 3.5+, the system library dependencies (e.g. "-lz") are accessed
 diff --git a/driver/main.cpp b/driver/main.cpp
-index 75c8940..bc6327b 100644
+index 75c89403..0266a83e 100644
 --- a/driver/main.cpp
 +++ b/driver/main.cpp
-@@ -823,6 +823,8 @@ void registerPredefinedTargetVersions() {
+@@ -667,9 +667,6 @@ void initializePasses() {
+   initializeInstrumentation(Registry);
+   initializeAnalysis(Registry);
+   initializeCodeGen(Registry);
+-#if LDC_LLVM_VER >= 309
+-  initializeGlobalISel(Registry);
+-#endif
+   initializeTarget(Registry);
+ 
+ // Initialize passes not included above
+@@ -823,6 +820,8 @@ void registerPredefinedTargetVersions() {
          "S390X"); // For backwards compatibility.
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
      break;
@@ -66,7 +63,7 @@ index 75c8940..bc6327b 100644
    default:
      error(Loc(), "invalid cpu architecture specified: %s",
            global.params.targetTriple->getArchName().str().c_str());
-@@ -912,6 +914,8 @@ void registerPredefinedTargetVersions() {
+@@ -912,6 +911,8 @@ void registerPredefinedTargetVersions() {
      VersionCondition::addPredefinedGlobalIdent("AIX");
      VersionCondition::addPredefinedGlobalIdent("Posix");
      break;
@@ -76,7 +73,7 @@ index 75c8940..bc6327b 100644
      switch (global.params.targetTriple->getEnvironment()) {
      case llvm::Triple::Android:
 diff --git a/tools/CMakeLists.txt b/tools/CMakeLists.txt
-index ac9d9e8..35d1055 100644
+index ac9d9e85..35d10552 100644
 --- a/tools/CMakeLists.txt
 +++ b/tools/CMakeLists.txt
 @@ -28,34 +28,3 @@ function(build_d_tool output_exe compiler_args linker_args compile_deps link_dep

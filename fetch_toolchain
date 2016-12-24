@@ -28,7 +28,7 @@ function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
     git clone --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
-    runFrom $tmpDir/ldc git checkout '9566fc58c800aad27b13f2c8d1f4a63b299e0e3e'
+    gitCheckout $tmpDir/ldc '9566fc58c800aad27b13f2c8d1f4a63b299e0e3e'
     patch -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
   fi
 
@@ -51,7 +51,7 @@ function buildEmscripten
   # emcc and other python wrappers
   if [ ! -d $PREFIX_EMS ] ; then
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
-    gitCheckout $PREFIX_EMS '07b87426f898d6e9c677db291d9088c839197291'
+    #gitCheckout $PREFIX_EMS '07b87426f898d6e9c677db291d9088c839197291'
 
     # fake pkg-config files to keep the build systems of user projects happy
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
@@ -63,13 +63,13 @@ function buildEmscripten
   # the asmjs backend
   if [ ! -d $tmpDir/emscripten-llvm ] ; then
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
-    gitCheckout $tmpDir/emscripten-llvm '61acfb230665464544f2e8db292f8999fc3c628c'
+    gitCheckout $tmpDir/emscripten-llvm '881bd352731d21c7117ad7e2ece347aacae83965'
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
   if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
-    gitCheckout $tmpDir/emscripten-llvm/tools/clang '271ce598c3d1fe74efadc254f5be1b57edea9f41'
+    gitCheckout $tmpDir/emscripten-llvm/tools/clang '60a7e9a9c22b67309e5b1258d38fadfa481a25d3'
   fi
 
   mkdir -p $tmpDir/bin/emscripten-llvm
@@ -78,6 +78,7 @@ function buildEmscripten
     -G "Unix Makefiles" \
     -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
     -D "CMAKE_BUILD_TYPE=Release" \
+    -D "LLVM_BUILD_GLOBAL_ISEL=off" \
     -D "LLVM_TARGETS_TO_BUILD=host;JSBackend" \
     -D "LLVM_ENABLE_ASSERTIONS=off" \
     -D "LLVM_ENABLE_BACKTRACES=off" \
