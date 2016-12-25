@@ -18,6 +18,37 @@ function main
 
   buildEmscripten
   buildLdc
+
+  PATH="$PREFIX_EMS:$PATH" \
+    buildLibs
+}
+
+function buildLibs
+{
+  buildSdl2Mixer
+}
+
+function buildSdl2Mixer
+{
+  mkdir -p $tmpDir/SDL2_mixer
+
+  wget https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz -O $tmpDir/SDL2_mixer.tar.gz
+  runFrom $tmpDir tar xzf $tmpDir/SDL2_mixer.tar.gz
+  rm -rf $tmpDir/SDL2_mixer
+  mv $tmpDir/SDL2_mixer-2.0.1 $tmpDir/SDL2_mixer
+
+  mkdir -p $tmpDir/bin/SDL2_mixer
+  runFrom $tmpDir/bin/SDL2_mixer emconfigure ../../SDL2_mixer/configure \
+    CFLAGS="-O3 -s USE_OGG=1 -s USE_VORBIS=1" \
+    --prefix="$PREFIX_EMS/system" \
+    --disable-sdltest \
+    --enable-shared \
+    --enable-music-ogg \
+    --disable-music-mp3 \
+    --disable-music-flac \
+    --disable-music-midi \
+    --disable-music-mod
+  runFrom $tmpDir/bin/SDL2_mixer emmake make -j`nproc` install
 }
 
 # Here, we build and install:
@@ -57,7 +88,10 @@ function buildEmscripten
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
+
     generateSdl2Pc > $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc
+    generateSdl2ImagePc > $PREFIX_EMS/system/lib/pkgconfig/SDL2_image.pc
+    cp $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc $PREFIX_EMS/system/lib/pkgconfig/SDL2_mixer.pc
   fi
 
   # the asmjs backend
@@ -93,9 +127,18 @@ function generateSdl2Pc
 {
   echo "Name: sdl2"
   echo "Description: SDL2"
-  echo "Version: 1.2.15"
+  echo "Version: 2.0.0"
   echo "Cflags: -s USE_SDL=2"
   echo "Libs: -s USE_SDL=2"
+}
+
+function generateSdl2ImagePc
+{
+  echo "Name: SDL2_image"
+  echo "Description: SDL2_image"
+  echo "Version: 2.0.0"
+  echo "Cflags: -s USE_SDL_IMAGE=2"
+  echo "Libs: -s USE_SDL_IMAGE=2"
 }
 
 function gitCheckout
