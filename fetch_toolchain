@@ -19,6 +19,10 @@ function main
   buildEmscripten
   buildLdc
 
+  # configure emcc (will create $HOME/.emscripten)
+  PATH=$PREFIX_JS/bin:$PATH \
+    $PREFIX_EMS/emcc --version
+
   PATH="$PREFIX_EMS:$PATH" \
     buildLibs
 }
