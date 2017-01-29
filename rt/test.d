@@ -96,35 +96,35 @@ void testClass()
 
 void testStruct()
 {
-  static struct S
+  static struct MyStruct
   {
     bool initialized = true;
-    bool called;
-    int arg;
+    bool ctorCalled;
+    int ctorArg;
     this(int arg_)
     {
-      called = true;
-      arg = arg_;
+      ctorCalled = true;
+      ctorArg = arg_;
     }
 
-    static bool destroyed;
+    static bool dtorCalled;
 
     ~this() nothrow
     {
-      destroyed = true;
+      dtorCalled = true;
     }
   }
 
   {
-    auto s = newStruct!S(123);
+    auto s = newStruct!MyStruct(123);
     check(s.initialized);
-    check(s.called);
-    check(s.arg == 123);
-    check(!s.destroyed);
+    check(s.ctorCalled);
+    check(s.ctorArg == 123);
+    check(!s.dtorCalled);
 
     deleteStruct(s);
   }
-  check(S.destroyed);
+  check(MyStruct.dtorCalled);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
