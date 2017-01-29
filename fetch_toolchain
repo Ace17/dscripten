@@ -19,15 +19,22 @@ function main
   buildEmscripten
   buildLdc
 
-  # configure emcc (will create $HOME/.emscripten)
-  PATH=$PREFIX_JS/bin:$PATH \
-    $PREFIX_EMS/emcc --version
+  configureEmcc
 
   PATH="$PREFIX_EMS:$PATH" \
-    buildLibs
+    buildExtraLibs
+
+  echo "Success. Your asmjs toolchain is now ready."
 }
 
-function buildLibs
+function configureEmcc
+{
+  # will create $HOME/.emscripten
+  PATH=$PREFIX_JS/bin:$PATH \
+    $PREFIX_EMS/emcc --version
+}
+
+function buildExtraLibs
 {
   buildSdl2Mixer
 }
