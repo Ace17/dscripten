@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8b541a3e..5d56483d 100644
+index 14523304..f94e302d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -686,11 +686,6 @@ add_subdirectory(tools)
+@@ -712,11 +712,6 @@ add_subdirectory(tools)
  # Test and runtime targets. Note that enable_testing() is order-sensitive!
  #
  enable_testing()
@@ -14,9 +14,9 @@ index 8b541a3e..5d56483d 100644
  
  #
  # Install target.
-@@ -704,7 +699,7 @@ if(${BUILD_SHARED})
+@@ -730,7 +725,7 @@ if(${BUILD_SHARED})
      # as well, for the time being this just bloats the normal packages.
-     install(TARGETS ${LDC_LIB} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+     install(TARGETS ${LDC_LIB} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
  endif()
 -install(FILES ${PROJECT_BINARY_DIR}/bin/${LDC_EXE}_install.conf DESTINATION ${CONF_INST_DIR} RENAME ${LDC_EXE}.conf)
 +# install(FILES ${PROJECT_BINARY_DIR}/bin/${LDC_EXE}_install.conf DESTINATION ${CONF_INST_DIR} RENAME ${LDC_EXE}.conf)
@@ -24,10 +24,10 @@ index 8b541a3e..5d56483d 100644
  if(MSVC)
      install(DIRECTORY vcbuild/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.bat")
 diff --git a/cmake/Modules/FindLLVM.cmake b/cmake/Modules/FindLLVM.cmake
-index 2b322f15..00bf8333 100644
+index 2062136c..8a67a9a1 100644
 --- a/cmake/Modules/FindLLVM.cmake
 +++ b/cmake/Modules/FindLLVM.cmake
-@@ -214,6 +214,12 @@ else()
+@@ -211,6 +211,12 @@ else()
          list(REMOVE_ITEM LLVM_FIND_COMPONENTS "ipa" index)
      endif()
  
@@ -41,10 +41,10 @@ index 2b322f15..00bf8333 100644
      if(NOT ${LLVM_VERSION_STRING} MATCHES "^3\\.[0-4][\\.0-9A-Za-z]*")
          # In LLVM 3.5+, the system library dependencies (e.g. "-lz") are accessed
 diff --git a/driver/main.cpp b/driver/main.cpp
-index 75c89403..0266a83e 100644
+index 79b882cf..8e9230ab 100644
 --- a/driver/main.cpp
 +++ b/driver/main.cpp
-@@ -667,9 +667,6 @@ void initializePasses() {
+@@ -587,9 +587,6 @@ void initializePasses() {
    initializeInstrumentation(Registry);
    initializeAnalysis(Registry);
    initializeCodeGen(Registry);
@@ -54,7 +54,7 @@ index 75c89403..0266a83e 100644
    initializeTarget(Registry);
  
  // Initialize passes not included above
-@@ -823,6 +820,8 @@ void registerPredefinedTargetVersions() {
+@@ -743,6 +740,8 @@ void registerPredefinedTargetVersions() {
          "S390X"); // For backwards compatibility.
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
      break;
@@ -63,7 +63,7 @@ index 75c89403..0266a83e 100644
    default:
      error(Loc(), "invalid cpu architecture specified: %s",
            global.params.targetTriple->getArchName().str().c_str());
-@@ -912,6 +911,8 @@ void registerPredefinedTargetVersions() {
+@@ -832,6 +831,8 @@ void registerPredefinedTargetVersions() {
      VersionCondition::addPredefinedGlobalIdent("AIX");
      VersionCondition::addPredefinedGlobalIdent("Posix");
      break;
