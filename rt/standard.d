@@ -151,9 +151,8 @@ void emplaceRef(T, UT, Args...)(ref UT chunk, auto ref Args args)
     }
     else
     {
-      S* p = () @trusted { return cast(S*) &chunk; }();
-      emplaceInitializer(*p);
-      p.__ctor(args);
+      emplaceInitializer(chunk);
+      chunk.__ctor(args);
     }
   }
   else static if (is(typeof(chunk.__ctor(args))))

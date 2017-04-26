@@ -100,6 +100,7 @@ function buildEmscripten
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
 
+    generateGlPc > $PREFIX_EMS/system/lib/pkgconfig/gl.pc
     generateSdl2Pc > $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc
     generateSdl2ImagePc > $PREFIX_EMS/system/lib/pkgconfig/SDL2_image.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc $PREFIX_EMS/system/lib/pkgconfig/SDL2_mixer.pc
@@ -132,6 +133,15 @@ function buildEmscripten
 
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc`
   runFrom $tmpDir/bin/emscripten-llvm make -j`nproc` install
+}
+
+function generateGlPc
+{
+  echo "Name: gl"
+  echo "Description: gl"
+  echo "Version: 2.0.0"
+  echo "Cflags: "
+  echo "Libs: -lGL"
 }
 
 function generateSdl2Pc
