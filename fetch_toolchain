@@ -9,7 +9,7 @@ set -euo pipefail
 
 readonly PREFIX_JS=/tmp/toolchains/llvm-js
 readonly PREFIX_EMS=/tmp/toolchains/emscripten
-readonly tmpDir=/tmp/emsd-source
+readonly tmpDir=/tmp/dscripten-tmp
 readonly scriptDir=$(realpath $(dirname $0))
 
 readonly MAKE="make -j`nproc`"
