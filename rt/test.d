@@ -7,10 +7,11 @@ extern(C) void quit();
 extern(C)
 void startup()
 {
-  printf("Running tests\n");
-  testClass();
-  testStruct();
-  printf("Tests OK\n");
+  runTest!("class: empty", testEmptyClass);
+  runTest!("class: ctor/dtor", testClassCtorAndDtor);
+  runTest!("class: derived", testDerivedClass);
+
+  runTest!("struct: ctor/dtor", testStructCtorAndDtor);
 }
 
 extern(C)
@@ -21,52 +22,53 @@ void mainLoop()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void testClass()
+private class C
 {
-  static class C
+  static bool called;
+  static bool constructed;
+  static bool destroyed;
+
+  this()
   {
-    static bool called;
-    static bool constructed;
-    static bool destroyed;
-
-    this()
-    {
-      constructed = true;
-    }
-
-    ~this()
-    {
-      destroyed = true;
-    }
-
-    void f()
-    {
-      called = true;
-    }
+    constructed = true;
   }
 
-  // empty class
+  ~this()
   {
-    static class E
-    {
-    }
-
-    auto o = newObject!E;
-    check(o !is null);
-    deleteObject(o);
+    destroyed = true;
   }
 
+  void f()
+  {
+    called = true;
+  }
+}
+
+void testEmptyClass()
+{
+  static class E
+  {
+  }
+
+  auto o = newObject!E;
+  check(o !is null);
+  deleteObject(o);
+}
+
+void testClassCtorAndDtor()
+{
+  auto c = newObject!C;
+  check(C.constructed);
+  c.f();
+  check(C.called);
+
+  deleteObject(c);
+  check(C.destroyed);
+}
+
+void testDerivedClass()
+{
   // construction/destruction
-  {
-    auto c = newObject!C;
-    check(C.constructed);
-    c.f();
-    check(C.called);
-
-    deleteObject(c);
-    check(C.destroyed);
-  }
-
   static class D : C
   {
     static bool derivedObjectConstructed;
@@ -86,15 +88,16 @@ void testClass()
   // polymorphism
   {
     C c = newObject!D;
+    check(D.derivedObjectConstructed);
+
     c.f();
     check(D.called);
-    check(D.derivedObjectConstructed);
 
     deleteObject(c);
   }
 }
 
-void testStruct()
+void testStructCtorAndDtor()
 {
   static struct MyStruct
   {
@@ -128,6 +131,12 @@ void testStruct()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+void runTest(string name, alias f)()
+{
+  printf("Test: %s\n", name.ptr);
+  f();
+}
 
 void check(bool condition, string file=__FILE__, int line=__LINE__)
 {
