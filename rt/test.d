@@ -7,11 +7,11 @@ extern(C) void quit();
 extern(C)
 void startup()
 {
+  runTest!("struct: ctor/dtor", testStructCtorAndDtor);
+
   runTest!("class: empty", testEmptyClass);
   runTest!("class: ctor/dtor", testClassCtorAndDtor);
   runTest!("class: derived", testDerivedClass);
-
-  runTest!("struct: ctor/dtor", testStructCtorAndDtor);
 }
 
 extern(C)
@@ -41,17 +41,17 @@ void testClassCtorAndDtor()
     static bool constructed;
     static bool destroyed;
 
-    this()
+    this() nothrow
     {
       constructed = true;
     }
 
-    ~this()
+    ~this() nothrow
     {
       destroyed = true;
     }
 
-    void f()
+    void f() nothrow
     {
       called = true;
     }
@@ -104,14 +104,14 @@ void testDerivedClass()
   }
 }
 
-void testStructCtorAndDtor()
+void testStructCtorAndDtor() nothrow
 {
   static struct MyStruct
   {
-    bool initialized = true;
+    int initialized = 7654;
     bool ctorCalled;
     int ctorArg;
-    this(int arg_)
+    this(int arg_) nothrow
     {
       ctorCalled = true;
       ctorArg = arg_;
@@ -125,9 +125,23 @@ void testStructCtorAndDtor()
     }
   }
 
+  // statically allocated struct
+  {
+    {
+      auto s = MyStruct(123);
+      check(s.initialized == 7654);
+      check(s.ctorCalled);
+      check(s.ctorArg == 123);
+      check(!s.dtorCalled);
+    }
+    check(MyStruct.dtorCalled);
+  }
+
+  // dynamically allocated struct
+  MyStruct.dtorCalled = false;
   {
     auto s = newStruct!MyStruct(123);
-    check(s.initialized);
+    check(s.initialized == 7654);
     check(s.ctorCalled);
     check(s.ctorArg == 123);
     check(!s.dtorCalled);
@@ -145,7 +159,7 @@ void runTest(string name, alias f)()
   f();
 }
 
-void check(bool condition, string file=__FILE__, int line=__LINE__)
+void check(bool condition, string file=__FILE__, int line=__LINE__) nothrow
 {
   if(condition)
     return;

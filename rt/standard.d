@@ -1,21 +1,21 @@
 // minimalistic D standard library
 pragma(LDC_no_moduleinfo);
 
-extern(C) int printf(const(char)*, ...);
-extern(C) void exit(int);
-extern(C) void* malloc(size_t);
-extern(C) void* calloc(int, size_t);
-extern(C) void free(void*);
+extern(C) int printf(const(char)*, ...) nothrow;
+extern(C) void exit(int) nothrow;
+extern(C) void* malloc(size_t) nothrow;
+extern(C) void* calloc(int, size_t) nothrow;
+extern(C) void free(void*) nothrow;
 extern(C) void* memcpy(void*, const(void)*, size_t) pure nothrow;
 
-T* newStruct(T, Args...)(auto ref Args args)
+T* newStruct(T, Args...)(auto ref Args args) nothrow
 {
   auto r = cast(T*) calloc(1, T.sizeof);
   emplace!T(r, args);
   return r;
 }
 
-void deleteStruct(T)(T * r)
+void deleteStruct(T)(T * r) nothrow
 {
   .destroy(*r);
   free(r);
