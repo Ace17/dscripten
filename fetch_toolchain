@@ -64,12 +64,11 @@ function buildSdl2Mixer
 
 # Here, we build and install:
 # - vanilla LLVM (3.9)
-# - ldc D2 compiler (which requires LLVM >= 3.5)
-# - llvm-cbe, aka the "resurrected C backend" (which requires LLVM == 3.9)
+# - ldc D2 compiler (requires LLVM >= 3.5)
 function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
-    git clone --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
+    git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
     gitCheckout $tmpDir/ldc 'a89719d7bd88b5f97aed06098c44b80402e61dd9'
     patch -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
   fi
@@ -95,7 +94,7 @@ function buildEmscripten
     git clone --depth=1 -b master --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
     #gitCheckout $PREFIX_EMS '07b87426f898d6e9c677db291d9088c839197291'
 
-    # fake pkg-config files to keep the build systems of user projects happy
+    # fake pkg-config files to keep happy the build systems of user projects, which don't know about emscripten
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
