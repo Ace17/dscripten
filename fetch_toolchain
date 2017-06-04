@@ -71,8 +71,8 @@ function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
     git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
-    gitCheckout $tmpDir/ldc 'a89719d7bd88b5f97aed06098c44b80402e61dd9'
-    patch -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
+    gitCheckout $tmpDir/ldc '20084000b0eeb599f64527c0536fe606dca145c8'
+    patch --merge -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
   fi
 
   mkdir -p $tmpDir/bin/ldc
