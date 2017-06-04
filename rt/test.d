@@ -22,28 +22,6 @@ void mainLoop()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-private class C
-{
-  static bool called;
-  static bool constructed;
-  static bool destroyed;
-
-  this()
-  {
-    constructed = true;
-  }
-
-  ~this()
-  {
-    destroyed = true;
-  }
-
-  void f()
-  {
-    called = true;
-  }
-}
-
 void testEmptyClass()
 {
   static class E
@@ -57,6 +35,28 @@ void testEmptyClass()
 
 void testClassCtorAndDtor()
 {
+  static class C
+  {
+    static bool called;
+    static bool constructed;
+    static bool destroyed;
+
+    this()
+    {
+      constructed = true;
+    }
+
+    ~this()
+    {
+      destroyed = true;
+    }
+
+    void f()
+    {
+      called = true;
+    }
+  }
+
   auto c = newObject!C;
   check(C.constructed);
   c.f();
@@ -68,8 +68,15 @@ void testClassCtorAndDtor()
 
 void testDerivedClass()
 {
+  static class Base
+  {
+    void f()
+    {
+    }
+  }
+
   // construction/destruction
-  static class D : C
+  static class D : Base
   {
     static bool derivedObjectConstructed;
     static bool called;
@@ -87,7 +94,7 @@ void testDerivedClass()
 
   // polymorphism
   {
-    C c = newObject!D;
+    Base c = newObject!D;
     check(D.derivedObjectConstructed);
 
     c.f();
