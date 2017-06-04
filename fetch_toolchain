@@ -12,6 +12,8 @@ readonly PREFIX_EMS=/tmp/toolchains/emscripten
 readonly tmpDir=/tmp/emsd-source
 readonly scriptDir=$(realpath $(dirname $0))
 
+readonly MAKE="make -j`nproc`"
+
 function main
 {
   mkdir -p $tmpDir
@@ -59,7 +61,7 @@ function buildSdl2Mixer
     --disable-music-flac \
     --disable-music-midi \
     --disable-music-mod
-  runFrom $tmpDir/bin/SDL2_mixer emmake make -j`nproc` install
+  runFrom $tmpDir/bin/SDL2_mixer emmake $MAKE install
 }
 
 # Here, we build and install:
@@ -79,8 +81,8 @@ function buildLdc
     -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
     -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" \
     ../../ldc
-  runFrom $tmpDir/bin/ldc make -j`nproc`
-  runFrom $tmpDir/bin/ldc make -j`nproc` install
+  runFrom $tmpDir/bin/ldc $MAKE
+  runFrom $tmpDir/bin/ldc $MAKE install
 }
 
 # Here, we build and install:
@@ -132,8 +134,8 @@ function buildEmscripten
     -D "CLANG_ENABLE_ARCMT=off" \
     ../../emscripten-llvm
 
-  runFrom $tmpDir/bin/emscripten-llvm make -j`nproc`
-  runFrom $tmpDir/bin/emscripten-llvm make -j`nproc` install
+  runFrom $tmpDir/bin/emscripten-llvm $MAKE
+  runFrom $tmpDir/bin/emscripten-llvm $MAKE install
 }
 
 function generateGlPc
