@@ -9,9 +9,10 @@ all: $(BIN)/full.$(EXT) $(BIN)/test-full.$(EXT)
 clean:
 	rm -rf $(BIN)
 
-$(BIN)/%.$(EXT): $(BIN)/%.bc
+$(BIN)/%.$(EXT):
 	@mkdir -p $(dir $@)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -w $^ -o "$@" -lSDL -lSDL_gfx
+	llvm-link $^ -o="$@.bc"
+	$(LINK) $(CFLAGS) $(LDFLAGS) -w "$@.bc" -o "$@" -lSDL -lSDL_gfx
 
 $(BIN)/%.bc: %.d
 	@mkdir -p $(dir $@)
@@ -19,23 +20,20 @@ $(BIN)/%.bc: %.d
 
 $(BIN)/%.bc: %.c
 	@mkdir -p $(dir $@)
-	clang $(CFLAGS) $< -c -emit-llvm -o "$@"
+	clang $(CFLAGS) $< -c -S -emit-llvm -o "$@.llvm"
+	llvm-as "$@.llvm" -o="$@"
 
-$(BIN)/test-full.bc: \
+$(BIN)/test-full.$(EXT): \
 	$(BIN)/rt/test.bc \
 	$(BIN)/rt/runtime.bc \
 	$(BIN)/rt/standard.bc \
 	$(BIN)/rt/object.bc
-	@mkdir -p $(dir $@)
-	llvm-link -o "$@" $^
 
-$(BIN)/full.bc: \
+$(BIN)/full.$(EXT): \
 	$(BIN)/src/main.bc \
 	$(BIN)/src/game.bc \
 	$(BIN)/src/vec.bc \
 	$(BIN)/rt/runtime.bc \
 	$(BIN)/rt/standard.bc \
 	$(BIN)/rt/object.bc
-	@mkdir -p $(dir $@)
-	llvm-link -o "$@" $^
 
