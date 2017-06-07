@@ -42,7 +42,7 @@ void testEmptyClass()
   {
   }
 
-  auto o = newObject!E;
+  auto o = new E;
   check(o !is null);
   deleteObject(o);
 }
@@ -71,7 +71,7 @@ void testClassCtorAndDtor()
     }
   }
 
-  auto c = newObject!C;
+  auto c = new C;
   check(C.constructed);
   c.f();
   check(C.called);
@@ -108,7 +108,7 @@ void testDerivedClass()
 
   // polymorphism
   {
-    Base c = newObject!D;
+    Base c = new D;
     check(D.derivedObjectConstructed);
 
     c.f();

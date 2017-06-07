@@ -21,15 +21,6 @@ void deleteStruct(T)(T * r) nothrow
   free(r);
 }
 
-T newObject(T, Args...)(Args args)
-{
-  enum classSize = __traits(classInstanceSize, T);
-
-  void* chunk = malloc(classSize);
-
-  return emplace!T(chunk[0 .. classSize]);
-}
-
 void deleteObject(T)(T o) if(is(T == class))
 {
   static if(hasMember!(T, "__dtor"))

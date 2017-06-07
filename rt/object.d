@@ -8,6 +8,7 @@ private
 {
   extern (C) void not_implemented(const char* file=__FILE__.ptr, int line=__LINE__) pure @nogc @safe nothrow;
   extern(C) int strlen(const char*) nothrow pure;
+  extern(C) void* malloc(size_t) nothrow pure;
 }
 
 version(D_LP64)
@@ -644,8 +645,7 @@ class TypeInfo_Class : TypeInfo
 
   override const(void)[] initializer() nothrow pure const @safe
   {
-    not_implemented();
-    return [];
+    return m_init;
   }
 
   override @property uint flags() nothrow pure const { return 1; }
@@ -1351,5 +1351,12 @@ private void _destructRecurse(E, size_t n)(ref E[n] arr)
     foreach_reverse (ref elem; arr)
       _destructRecurse(elem);
   }
+}
+
+extern (C) Object _d_allocclass(const TypeInfo_Class ci) nothrow
+{
+  auto p = cast(byte*)malloc(ci.initializer.length);
+  p[0 .. ci.initializer.length] = cast(byte[])ci.initializer[];
+  return cast(Object)p;
 }
 
