@@ -5,16 +5,16 @@ DFLAGS?="-Iapi/native"
 LINK?=clang
 
 all: \
-	$(BIN)/full.$(EXT) \
-	$(BIN)/test-full.$(EXT) \
+	$(BIN)/game.$(EXT) \
+	$(BIN)/tests.$(EXT) \
 
-$(BIN)/test-full.$(EXT): \
+$(BIN)/tests.$(EXT): \
 	$(BIN)/rt/test.bc \
 	$(BIN)/rt/runtime.bc \
 	$(BIN)/rt/standard.bc \
 	$(BIN)/rt/object.bc
 
-$(BIN)/full.$(EXT): \
+$(BIN)/game.$(EXT): \
 	$(BIN)/src/main.bc \
 	$(BIN)/src/game.bc \
 	$(BIN)/src/vec.bc \
