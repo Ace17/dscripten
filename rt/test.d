@@ -12,6 +12,10 @@ void startup()
   runTest!("class: empty", testEmptyClass);
   runTest!("class: ctor/dtor", testClassCtorAndDtor);
   runTest!("class: derived", testDerivedClass);
+
+  runTest!("floating point: basic", testFloatingPoint);
+
+  printf("OK\n"); // for some reason execution with nodejs gets stuck at the end
 }
 
 extern(C)
@@ -21,6 +25,16 @@ void mainLoop()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+float g_f; // global nan-initialized float compile-test
+
+void testFloatingPoint()
+{
+  check(g_f != g_f);
+
+  float f;
+  check(f != f);
+}
 
 void testEmptyClass()
 {
