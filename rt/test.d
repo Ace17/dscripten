@@ -154,7 +154,7 @@ void testStructCtorAndDtor() nothrow
   // dynamically allocated struct
   MyStruct.dtorCalled = false;
   {
-    auto s = newStruct!MyStruct(123);
+    auto s = new MyStruct(123);
     check(s.initialized == 7654);
     check(s.ctorCalled);
     check(s.ctorArg == 123);

@@ -9,6 +9,7 @@ private
   extern (C) void not_implemented(const char* file=__FILE__.ptr, int line=__LINE__) pure @nogc @safe nothrow;
   extern(C) int strlen(const char*) nothrow pure;
   extern(C) void* malloc(size_t) nothrow pure;
+  extern(C) void memset(void*, long, size_t) nothrow pure;
 }
 
 version(D_LP64)
@@ -1358,5 +1359,26 @@ extern (C) Object _d_allocclass(const TypeInfo_Class ci) nothrow
   auto p = cast(byte*)malloc(ci.initializer.length);
   p[0 .. ci.initializer.length] = cast(byte[])ci.initializer[];
   return cast(Object)p;
+}
+
+extern (C) void* _d_newitemU(in TypeInfo ti)
+{
+	return malloc(ti.tsize);
+}
+
+extern (C) void* _d_newitemT(in TypeInfo ti)
+{
+	auto p = _d_newitemU(ti);
+	memset(p, 0, ti.tsize);
+	return p;
+}
+
+extern (C) void* _d_newitemiT(in TypeInfo ti)
+{
+	auto p = _d_newitemU(ti);
+	auto init = ti.init;
+	assert(init.length <= ti.tsize);
+	p[0 .. init.length] = init[];
+	return p;
 }
 
