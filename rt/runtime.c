@@ -16,6 +16,7 @@ void not_implemented(const char* file, int line)
 // can't get rid of those, seems to be refered-to by compiler-inserted code
 int _D10TypeInfo_v6__initZ;
 int _D10TypeInfo_m6__initZ;
+int _D11TypeInfo_Ai6__initZ;
 void _d_throw_exception() { NOT_IMPLEMENTED; }
 ///////////////////////////////////////////////////////////////////////////////
 

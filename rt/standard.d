@@ -83,6 +83,17 @@ private:
   int len;
 }
 
+T[] newArray(T)(int length)
+{
+  void* block = calloc(T.sizeof, length);
+  return cast(T[])block[0 .. T.sizeof * length];
+}
+
+void deleteArray(T)(in T[] arr)
+{
+  free(cast(void*)arr.ptr);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // meta
 

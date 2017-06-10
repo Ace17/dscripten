@@ -1382,3 +1382,14 @@ extern (C) void* _d_newitemiT(in TypeInfo ti)
 	return p;
 }
 
+// for array cast
+extern (C)
+size_t _d_array_cast_len(size_t len, size_t elemsz, size_t newelemsz)
+{
+  if (newelemsz == 1)
+    return len*elemsz;
+  if ((len*elemsz) % newelemsz)
+    not_implemented(); // bad array cast
+  return (len*elemsz)/newelemsz;
+}
+

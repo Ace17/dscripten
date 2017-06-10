@@ -13,6 +13,7 @@ int main()
 
   runTest!("floating point: basic", testFloatingPoint);
   runTest!("arrays: copy", testArrayCopy);
+  runTest!("arrays: dynamic", testArrayDynamic);
 
   return 0;
 }
@@ -169,6 +170,17 @@ void testArrayCopy()
   tab2 = tab;
   assertEquals(4, tab2[0]);
   assertEquals(4, tab2[9]);
+}
+
+void testArrayDynamic()
+{
+  int[] tab = newArray!int(256);
+  assertEquals(256, cast(int)tab.length);
+  assert(tab.ptr);
+  assertEquals(0, tab[0]);
+  tab[1] = 1234;
+
+  deleteArray(tab);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
