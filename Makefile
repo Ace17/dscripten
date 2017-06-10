@@ -19,6 +19,7 @@ $(BIN)/game.$(EXT): \
 	$(BIN)/src/game.bc \
 	$(BIN)/src/vec.bc \
 	$(BIN)/rt/runtime.bc \
+	$(BIN)/rt/mainloop.bc \
 	$(BIN)/rt/standard.bc \
 	$(BIN)/rt/object.bc
 

@@ -19,13 +19,12 @@ SDL_Surface* screen;
 extern(C) void quit();
 
 extern(C)
-int startup()
+void startup()
 {
   SDL_Init(SDL_INIT_VIDEO);
   screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, 0);
   SDL_WM_SetCaption("Dscripten demo game", null);
   game.init();
-  return 1;
 }
 
 extern(C)

@@ -2,10 +2,8 @@
 pragma(LDC_no_moduleinfo);
 import standard;
 
-extern(C) void quit();
-
 extern(C)
-bool startup()
+int main()
 {
   runTest!("struct: ctor/dtor", testStructCtorAndDtor);
 
@@ -16,13 +14,7 @@ bool startup()
   runTest!("floating point: basic", testFloatingPoint);
   runTest!("arrays: copy", testArrayCopy);
 
-  return false; // don't run mainLoop
-}
-
-extern(C)
-void mainLoop()
-{
-  assert(0);
+  return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
