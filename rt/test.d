@@ -14,6 +14,7 @@ void startup()
   runTest!("class: derived", testDerivedClass);
 
   runTest!("floating point: basic", testFloatingPoint);
+  runTest!("arrays: copy", testArrayCopy);
 
   printf("OK\n"); // for some reason execution with nodejs gets stuck at the end
 }
@@ -163,6 +164,19 @@ void testStructCtorAndDtor() nothrow
     deleteStruct(s);
   }
   check(MyStruct.dtorCalled);
+}
+
+void testArrayCopy()
+{
+  int[10] tab;
+  tab[] = 4;
+  check(tab[0] == 4);
+  check(tab[9] == 4);
+
+  int[10] tab2;
+  tab2 = tab;
+  check(tab2[0] == 4);
+  check(tab2[9] == 4);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
