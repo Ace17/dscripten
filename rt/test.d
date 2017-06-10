@@ -148,9 +148,9 @@ void testStructCtorAndDtor() nothrow
   MyStruct.dtorCalled = false;
   {
     auto s = new MyStruct(123);
-    check(s.initialized == 7654);
+    assertEquals(7654, s.initialized);
     check(s.ctorCalled);
-    check(s.ctorArg == 123);
+    assertEquals(123, s.ctorArg);
     check(!s.dtorCalled);
 
     deleteStruct(s);
@@ -162,13 +162,13 @@ void testArrayCopy()
 {
   int[10] tab;
   tab[] = 4;
-  check(tab[0] == 4);
-  check(tab[9] == 4);
+  assertEquals(4, tab[0]);
+  assertEquals(4, tab[9]);
 
   int[10] tab2;
   tab2 = tab;
-  check(tab2[0] == 4);
-  check(tab2[9] == 4);
+  assertEquals(4, tab2[0]);
+  assertEquals(4, tab2[9]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,12 +179,21 @@ void runTest(string name, alias f)()
   f();
 }
 
+void assertEquals(int expected, int actual, string file=__FILE__, int line=__LINE__) nothrow
+{
+  if(expected == actual)
+    return;
+
+  printf("At %s(%d): expected %d, got %d\n", file.ptr, line, expected, actual);
+  exit(1);
+}
+
 void check(bool condition, string file=__FILE__, int line=__LINE__) nothrow
 {
   if(condition)
     return;
 
-  printf("Check failed at %s(%d)\n", file.ptr, line);
+  printf("At %s(%d): assertion failure\n", file.ptr, line);
   exit(1);
 }
 
