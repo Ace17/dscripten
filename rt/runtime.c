@@ -19,7 +19,7 @@ int _D10TypeInfo_m6__initZ;
 void _d_throw_exception() { NOT_IMPLEMENTED; }
 ///////////////////////////////////////////////////////////////////////////////
 
-void startup();
+int startup();
 void mainLoop();
 
 static int mustQuit;
@@ -30,8 +30,8 @@ void emscripten_set_main_loop(void (*function)(), int fps, int simulate_infinite
 
 int main()
 {
-  startup();
-  emscripten_set_main_loop(&mainLoop, 60, 1);
+  if(startup())
+    emscripten_set_main_loop(&mainLoop, 60, 1);
   return 0;
 }
 
@@ -41,7 +41,9 @@ void SDL_Delay(int);
 
 int main()
 {
-  startup();
+  if(!startup())
+    return 0;
+
   while(!mustQuit)
   {
     mainLoop();

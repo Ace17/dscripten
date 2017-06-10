@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "*********"
+echo "asmjs"
+./build_asmjs >/dev/null
+nodejs ./bin/asmjs/tests.js
+echo ""
+
+echo "*********"
+echo "native"
+./build_native >/dev/null
+./bin/native/tests.exe
+echo ""

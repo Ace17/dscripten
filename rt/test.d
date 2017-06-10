@@ -5,7 +5,7 @@ import standard;
 extern(C) void quit();
 
 extern(C)
-void startup()
+bool startup()
 {
   runTest!("struct: ctor/dtor", testStructCtorAndDtor);
 
@@ -16,13 +16,13 @@ void startup()
   runTest!("floating point: basic", testFloatingPoint);
   runTest!("arrays: copy", testArrayCopy);
 
-  printf("OK\n"); // for some reason execution with nodejs gets stuck at the end
+  return false; // don't run mainLoop
 }
 
 extern(C)
 void mainLoop()
 {
-  quit();
+  assert(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
