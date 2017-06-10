@@ -1,4 +1,4 @@
-int startup();
+void startup();
 void mainLoop();
 
 static int mustQuit;
