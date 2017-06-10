@@ -130,6 +130,8 @@ function buildEmscripten
     -D "LLVM_ENABLE_ASSERTIONS=off" \
     -D "LLVM_ENABLE_BACKTRACES=off" \
     -D "LLVM_ENABLE_WARNINGS=off" \
+    -D "LLVM_INCLUDE_EXAMPLES=off" \
+    -D "LLVM_INCLUDE_DOCS=off" \
     -D "CLANG_ENABLE_STATIC_ANALYZER=off" \
     -D "CLANG_ENABLE_ARCMT=off" \
     ../../emscripten-llvm
