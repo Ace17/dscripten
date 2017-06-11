@@ -15,6 +15,8 @@ int main()
   runTest!("arrays: copy", testArrayCopy);
   runTest!("arrays: dynamic", testArrayDynamic);
 
+  runTest!("delegates", testDelegate);
+
   return 0;
 }
 
@@ -183,8 +185,29 @@ void testArrayDynamic()
   deleteArray(tab);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+void testDelegate()
+{
+  static class C
+  {
+    int a;
+    void f()
+    {
+      ++a;
+    }
+  }
 
+  static void callMe(void delegate() func)
+  {
+    for(int i=0;i < 123;++i)
+      func();
+  }
+
+  auto c = new C;
+  callMe(&c.f);
+  assertEquals(123, c.a);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void runTest(string name, alias f)()
 {
   printf("Test: %s\n", name.ptr);
