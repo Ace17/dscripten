@@ -104,6 +104,8 @@ function buildEmscripten
     generateGlPc > $PREFIX_EMS/system/lib/pkgconfig/gl.pc
     generateSdl2Pc > $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc
     generateSdl2ImagePc > $PREFIX_EMS/system/lib/pkgconfig/SDL2_image.pc
+    generateOggPc > $PREFIX_EMS/system/lib/pkgconfig/ogg.pc
+    generateVorbisfilePc > $PREFIX_EMS/system/lib/pkgconfig/vorbisfile.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc $PREFIX_EMS/system/lib/pkgconfig/SDL2_mixer.pc
   fi
 
@@ -156,6 +158,24 @@ function generateSdl2Pc
   echo "Version: 2.0.0"
   echo "Cflags: -s USE_SDL=2"
   echo "Libs: -s USE_SDL=2"
+}
+
+function generateOggPc
+{
+  echo "Name: ogg"
+  echo "Description: OGG"
+  echo "Version: 2.0.0"
+  echo "Cflags: -s USE_OGG=1"
+  echo "Libs: -s USE_OGG=1"
+}
+
+function generateVorbisfilePc
+{
+  echo "Name: vorbisfile"
+  echo "Description: VorbisFile"
+  echo "Version: 2.0.0"
+  echo "Cflags: -s USE_VORBIS=1"
+  echo "Libs: -s USE_VORBIS=1"
 }
 
 function generateSdl2ImagePc
