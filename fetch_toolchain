@@ -70,6 +70,7 @@ function buildSdl2Mixer
 function buildLdc
 {
   if [ ! -d $tmpDir/ldc ] ; then
+    echo "Cloning LDC ..."
     git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
     gitCheckout $tmpDir/ldc '20084000b0eeb599f64527c0536fe606dca145c8'
     patch --merge -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
@@ -93,8 +94,9 @@ function buildEmscripten
 {
   # emcc and other python wrappers
   if [ ! -d $PREFIX_EMS ] ; then
-    git clone --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
-    gitCheckout $PREFIX_EMS 'd5dcc99e49a9e7201d37c0b8dcd898bbae2c72de'
+    echo "Cloning emscripten ..."
+    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
+    gitCheckout $PREFIX_EMS '1.37.22'
 
     # fake pkg-config files to keep happy the build systems of user projects, which don't know about emscripten
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
@@ -111,14 +113,16 @@ function buildEmscripten
 
   # the asmjs backend
   if [ ! -d $tmpDir/emscripten-llvm ] ; then
-    git clone --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
-    gitCheckout $tmpDir/emscripten-llvm 'cd8feb18426289a8ed7a7ac9e5dac2ea663d09bf'
+    echo "Cloning emscripten-fastcomp ..."
+    git clone -q --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
+    gitCheckout $tmpDir/emscripten-llvm '1.37.22'
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
   if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
-    git clone --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
-    gitCheckout $tmpDir/emscripten-llvm/tools/clang 'a1ed3cfe03ddc6c3a581adc412276e7841df8e5f'
+    echo "Cloning emscrikpten-fastcomp-clang ..."
+    git clone -q --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
+    gitCheckout $tmpDir/emscripten-llvm/tools/clang '1.37.22'
   fi
 
   mkdir -p $tmpDir/bin/emscripten-llvm
@@ -193,7 +197,8 @@ function gitCheckout
   local commit=$2
 
   runFrom $dir git fetch --depth 100
-  runFrom $dir git checkout "$commit"
+  runFrom $dir git checkout -q "$commit"
+  echo "[$dir] at $commit"
 }
 
 function runFrom
