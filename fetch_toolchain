@@ -95,8 +95,8 @@ function buildEmscripten
   # emcc and other python wrappers
   if [ ! -d $PREFIX_EMS ] ; then
     echo "Cloning emscripten ..."
-    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
-    gitCheckout $PREFIX_EMS '1.37.22'
+    git clone -q --depth=1000 -b incoming --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
+    gitCheckout $PREFIX_EMS '1.37.25'
 
     # fake pkg-config files to keep happy the build systems of user projects, which don't know about emscripten
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
@@ -115,14 +115,14 @@ function buildEmscripten
   if [ ! -d $tmpDir/emscripten-llvm ] ; then
     echo "Cloning emscripten-fastcomp ..."
     git clone -q --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
-    gitCheckout $tmpDir/emscripten-llvm '1.37.22'
+    gitCheckout $tmpDir/emscripten-llvm '1.37.25'
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
   if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
     echo "Cloning emscrikpten-fastcomp-clang ..."
     git clone -q --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
-    gitCheckout $tmpDir/emscripten-llvm/tools/clang '1.37.22'
+    gitCheckout $tmpDir/emscripten-llvm/tools/clang '1.37.25'
   fi
 
   mkdir -p $tmpDir/bin/emscripten-llvm
