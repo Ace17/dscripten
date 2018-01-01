@@ -1,60 +1,8 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 336bbdbc..8919ea41 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -762,11 +762,6 @@ add_test(NAME build-ldc2-unittest COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BIN
- add_test(NAME ldc2-unittest COMMAND ${LDC_UNITTEST_EXE_FULL} --version)
- set_tests_properties(ldc2-unittest PROPERTIES DEPENDS build-ldc2-unittest)
- 
--add_subdirectory(runtime)
--if(D_VERSION EQUAL 2)
--    add_subdirectory(tests/d2)
--endif()
--add_subdirectory(tests)
- 
- #
- # Install target.
-@@ -780,7 +775,7 @@ if(${BUILD_SHARED})
-     # as well, for the time being this just bloats the normal packages.
-     install(TARGETS ${LDC_LIB} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
- endif()
--install(FILES ${PROJECT_BINARY_DIR}/bin/${LDC_EXE}_install.conf DESTINATION ${CONF_INST_DIR} RENAME ${LDC_EXE}.conf)
-+# install(FILES ${PROJECT_BINARY_DIR}/bin/${LDC_EXE}_install.conf DESTINATION ${CONF_INST_DIR} RENAME ${LDC_EXE}.conf)
- 
- if(MSVC)
-     install(DIRECTORY vcbuild/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.bat")
-diff --git a/cmake/Modules/FindLLVM.cmake b/cmake/Modules/FindLLVM.cmake
-index a6a0b0b7..10d8eac0 100644
---- a/cmake/Modules/FindLLVM.cmake
-+++ b/cmake/Modules/FindLLVM.cmake
-@@ -207,6 +207,12 @@ else()
-         list(REMOVE_ITEM LLVM_FIND_COMPONENTS "libdriver" index)
-     endif()
- 
-+    list(REMOVE_ITEM LLVM_FIND_COMPONENTS "debuginfocodeview" index)
-+    list(REMOVE_ITEM LLVM_FIND_COMPONENTS "debuginfodwarf" index)
-+    list(REMOVE_ITEM LLVM_FIND_COMPONENTS "debuginfopdb" index)
-+    list(REMOVE_ITEM LLVM_FIND_COMPONENTS "globalisel" index)
-+    list(REMOVE_ITEM LLVM_FIND_COMPONENTS "ipa" index)
-+
-     llvm_set(LDFLAGS ldflags)
-     if(NOT ${LLVM_VERSION_STRING} MATCHES "^3\\.[0-4][\\.0-9A-Za-z]*")
-         # In LLVM 3.5+, the system library dependencies (e.g. "-lz") are accessed
 diff --git a/driver/main.cpp b/driver/main.cpp
-index 7e445414..9a97086a 100644
+index 826fc2e9..8a1dadb1 100644
 --- a/driver/main.cpp
 +++ b/driver/main.cpp
-@@ -594,9 +594,6 @@ void initializePasses() {
-   initializeInstrumentation(Registry);
-   initializeAnalysis(Registry);
-   initializeCodeGen(Registry);
--#if LDC_LLVM_VER >= 309
--  initializeGlobalISel(Registry);
--#endif
-   initializeTarget(Registry);
- 
- // Initialize passes not included above
-@@ -764,6 +761,8 @@ void registerPredefinedTargetVersions() {
+@@ -733,6 +733,8 @@ void registerPredefinedTargetVersions() {
          "S390X"); // For backwards compatibility.
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
      break;
@@ -63,51 +11,12 @@ index 7e445414..9a97086a 100644
    default:
      error(Loc(), "invalid cpu architecture specified: %s",
            global.params.targetTriple->getArchName().str().c_str());
-@@ -862,6 +861,8 @@ void registerPredefinedTargetVersions() {
+@@ -835,6 +837,8 @@ void registerPredefinedTargetVersions() {
      VersionCondition::addPredefinedGlobalIdent("AIX");
      VersionCondition::addPredefinedGlobalIdent("Posix");
      break;
 +  case llvm::Triple::Emscripten:
 +    break;
-   default:
-     switch (global.params.targetTriple->getEnvironment()) {
-     case llvm::Triple::Android:
-diff --git a/tools/CMakeLists.txt b/tools/CMakeLists.txt
-index ac9d9e85..35d10552 100644
---- a/tools/CMakeLists.txt
-+++ b/tools/CMakeLists.txt
-@@ -28,34 +28,3 @@ function(build_d_tool output_exe compiler_args linker_args compile_deps link_dep
-     )
- endfunction()
- 
--#############################################################################
--# Build ldc-prune-cache
--add_custom_target(${LDCPRUNECACHE_EXE} ALL DEPENDS ${LDCPRUNECACHE_EXE_FULL})
--set(LDCPRUNECACHE_D_SRC
--    ${PROJECT_SOURCE_DIR}/tools/ldc-prune-cache.d
--    ${PROJECT_SOURCE_DIR}/driver/cache_pruning.d
--)
--build_d_tool(
--    "${LDCPRUNECACHE_EXE_FULL}"
--    "${LDCPRUNECACHE_D_SRC}"
--    ""
--    "${LDCPRUNECACHE_D_SRC}"
--    ""
--)
--install(PROGRAMS ${LDCPRUNECACHE_EXE_FULL} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
--
--#############################################################################
--# Build ldc-profdata for converting profile data formats (source version depends on LLVM version)
--set(LDCPROFDATA_SRC ldc-profdata/llvm-profdata-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.cpp)
--if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${LDCPROFDATA_SRC})
--    add_executable(ldc-profdata ${LDCPROFDATA_SRC})
--    set_target_properties(
--        ldc-profdata PROPERTIES
--        OUTPUT_NAME "${LDCPROFDATA_EXE_NAME}"
--        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
--        COMPILE_FLAGS "${LLVM_CXXFLAGS} ${LDC_CXXFLAGS}"
--        LINK_FLAGS "${SANITIZE_LDFLAGS}"
--    )
--    target_link_libraries(ldc-profdata  ${LLVM_LIBRARIES} ${TERMINFO_LIBS} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
--    install(TARGETS ${LDCPROFDATA_EXE} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
--endif()
+   case llvm::Triple::UnknownOS:
+     if (arch == llvm::Triple::msp430)
+       break;
