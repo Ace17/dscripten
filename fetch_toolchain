@@ -82,7 +82,8 @@ function buildLdc
     -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
     -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" \
     ../../ldc
-  runFrom $tmpDir/bin/ldc $MAKE
+  runFrom $tmpDir/bin/ldc $MAKE -k || true
+  runFrom $tmpDir/bin/ldc make -j2 # retry with less parallelism (workaround potential memory limitations)
   runFrom $tmpDir/bin/ldc $MAKE install
 }
 
@@ -142,7 +143,8 @@ function buildEmscripten
     -D "CLANG_ENABLE_ARCMT=off" \
     ../../emscripten-llvm
 
-  runFrom $tmpDir/bin/emscripten-llvm $MAKE
+  runFrom $tmpDir/bin/emscripten-llvm $MAKE -k || true
+  runFrom $tmpDir/bin/emscripten-llvm make -j2 # retry with less parallelism (workaround potential memory limitations)
   runFrom $tmpDir/bin/emscripten-llvm $MAKE install
 }
 
