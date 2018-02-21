@@ -116,14 +116,14 @@ function buildEmscripten
   # the asmjs backend
   if [ ! -d $tmpDir/emscripten-llvm ] ; then
     echo "Cloning emscripten-fastcomp ..."
-    git clone -q --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
+    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
     gitCheckout $tmpDir/emscripten-llvm '1.37.25'
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
   if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
     echo "Cloning emscrikpten-fastcomp-clang ..."
-    git clone -q --depth=1 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
+    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
     gitCheckout $tmpDir/emscripten-llvm/tools/clang '1.37.25'
   fi
 
