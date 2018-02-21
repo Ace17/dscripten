@@ -65,7 +65,6 @@ function buildSdl2Mixer
 }
 
 # Here, we build and install:
-# - vanilla LLVM (3.9)
 # - ldc D2 compiler (requires LLVM >= 3.5)
 function buildLdc
 {
@@ -73,6 +72,8 @@ function buildLdc
     echo "Cloning LDC ..."
     git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
     gitCheckout $tmpDir/ldc 'f86e33f1d0f3f6417ded7c0beef067011014fce5'
+    runFrom $tmpDir/ldc git submodule init
+    runFrom $tmpDir/ldc git submodule update
     patch --merge -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
   fi
 
