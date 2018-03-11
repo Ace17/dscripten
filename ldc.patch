@@ -1,7 +1,51 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c47eb8cd..8f76e2eb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -818,7 +818,7 @@ add_subdirectory(utils)
+ #
+ # Auxiliary tools.
+ #
+-add_subdirectory(tools)
++#add_subdirectory(tools)
+ 
+ #
+ # Test and runtime targets. Note that enable_testing() is order-sensitive!
+diff --git a/driver/codegenerator.cpp b/driver/codegenerator.cpp
+index c326ed20..f7aae06f 100644
+--- a/driver/codegenerator.cpp
++++ b/driver/codegenerator.cpp
+@@ -70,7 +70,7 @@ createAndSetDiagnosticsOutputFile(IRState &irs, llvm::LLVMContext &ctx,
+ 
+     // If there is instrumentation data available, also output function hotness
+     if (opts::isUsingPGOProfile()) {
+-#if LDC_LLVM_VER >= 500
++#if LDC_LLVM_VER >= 500 && 0
+       ctx.setDiagnosticsHotnessRequested(true);
+ #else
+       ctx.setDiagnosticHotnessRequested(true);
 diff --git a/driver/main.cpp b/driver/main.cpp
-index 1472d24a..d0c78fee 100644
+index 1472d24a..7491b48e 100644
 --- a/driver/main.cpp
 +++ b/driver/main.cpp
+@@ -147,7 +147,7 @@ void printVersion(llvm::raw_ostream &OS) {
+   OS.flush();
+ 
+   llvm::TargetRegistry::printRegisteredTargetsForVersion(
+-#if LDC_LLVM_VER >= 600
++#if LDC_LLVM_VER >= 600 || 1
+     OS
+ #endif
+     );
+@@ -332,7 +332,7 @@ void parseCommandLine(int argc, char **argv, Strings &sourceFiles,
+   // finalize by expanding response files specified in config file
+   expandResponseFiles(allocator, allArguments);
+ 
+-#if LDC_LLVM_VER >= 600
++#if LDC_LLVM_VER >= 600 || 1
+   cl::SetVersionPrinter(&printVersion);
+ #else
+   cl::SetVersionPrinter(&printVersionStdout);
 @@ -763,6 +763,8 @@ void registerPredefinedTargetVersions() {
          "S390X"); // For backwards compatibility.
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
@@ -20,3 +64,16 @@ index 1472d24a..d0c78fee 100644
    case llvm::Triple::OpenBSD:
      VersionCondition::addPredefinedGlobalIdent("OpenBSD");
      VersionCondition::addPredefinedGlobalIdent("Posix");
+diff --git a/gen/tocall.cpp b/gen/tocall.cpp
+index c7118b8a..8cbb2b88 100644
+--- a/gen/tocall.cpp
++++ b/gen/tocall.cpp
+@@ -351,7 +351,7 @@ bool DtoLowerMagicIntrinsic(IRState *p, FuncDeclaration *fndecl, CallExp *e,
+     }
+     auto atomicOrdering =
+         static_cast<llvm::AtomicOrdering>((*e->arguments)[0]->toInteger());
+-#if LDC_LLVM_VER >= 500
++#if LDC_LLVM_VER >= 500 && 0
+     llvm::SyncScope::ID scope = llvm::SyncScope::System;
+     if (e->arguments->dim == 2) {
+       scope = static_cast<llvm::SyncScope::ID>((*e->arguments)[1]->toInteger());
