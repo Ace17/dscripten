@@ -1,8 +1,8 @@
 diff --git a/driver/main.cpp b/driver/main.cpp
-index 826fc2e9..8a1dadb1 100644
+index 1472d24a..d0c78fee 100644
 --- a/driver/main.cpp
 +++ b/driver/main.cpp
-@@ -733,6 +733,8 @@ void registerPredefinedTargetVersions() {
+@@ -763,6 +763,8 @@ void registerPredefinedTargetVersions() {
          "S390X"); // For backwards compatibility.
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
      break;
@@ -10,13 +10,13 @@ index 826fc2e9..8a1dadb1 100644
 +    break;
    default:
      error(Loc(), "invalid cpu architecture specified: %s",
-           global.params.targetTriple->getArchName().str().c_str());
-@@ -835,6 +837,8 @@ void registerPredefinedTargetVersions() {
-     VersionCondition::addPredefinedGlobalIdent("AIX");
+           triple.getArchName().str().c_str());
+@@ -861,6 +863,8 @@ void registerPredefinedTargetVersions() {
+     VersionCondition::addPredefinedGlobalIdent("NetBSD");
      VersionCondition::addPredefinedGlobalIdent("Posix");
      break;
 +  case llvm::Triple::Emscripten:
 +    break;
-   case llvm::Triple::UnknownOS:
-     if (arch == llvm::Triple::msp430)
-       break;
+   case llvm::Triple::OpenBSD:
+     VersionCondition::addPredefinedGlobalIdent("OpenBSD");
+     VersionCondition::addPredefinedGlobalIdent("Posix");
