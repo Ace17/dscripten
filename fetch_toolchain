@@ -81,6 +81,7 @@ function buildLdc
   runFrom $tmpDir/bin/ldc cmake \
     -G "Unix Makefiles" \
     -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
+    -D "LDC_DYNAMIC_COMPILE=OFF" \
     -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" \
     ../../ldc
   runFrom $tmpDir/bin/ldc $MAKE -k || true
