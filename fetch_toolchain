@@ -26,6 +26,8 @@ function main
   PATH="$PREFIX_EMS:$PATH" \
     buildExtraLibs
 
+  echo ""
+  echo "================================================================"
   echo "Success. Your asmjs toolchain is now ready."
 }
 
@@ -38,30 +40,7 @@ function configureEmcc
 
 function buildExtraLibs
 {
-  buildSdl2Mixer
-}
-
-function buildSdl2Mixer
-{
-  mkdir -p $tmpDir/SDL2_mixer
-
-  wget https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz -O $tmpDir/SDL2_mixer.tar.gz
-  runFrom $tmpDir tar xzf $tmpDir/SDL2_mixer.tar.gz
-  rm -rf $tmpDir/SDL2_mixer
-  mv $tmpDir/SDL2_mixer-2.0.1 $tmpDir/SDL2_mixer
-
-  mkdir -p $tmpDir/bin/SDL2_mixer
-  runFrom $tmpDir/bin/SDL2_mixer emconfigure ../../SDL2_mixer/configure \
-    CFLAGS="-O3 -s USE_OGG=1 -s USE_VORBIS=1" \
-    --prefix="$PREFIX_EMS/system" \
-    --disable-sdltest \
-    --enable-shared \
-    --enable-music-ogg \
-    --disable-music-mp3 \
-    --disable-music-flac \
-    --disable-music-midi \
-    --disable-music-mod
-  runFrom $tmpDir/bin/SDL2_mixer emmake $MAKE install
+  echo "All extra libs OK"
 }
 
 # Here, we build and install:
@@ -102,7 +81,6 @@ function buildEmscripten
     gitCheckout $PREFIX_EMS '1.37.35'
 
     # fake pkg-config files to keep happy the build systems of user projects, which don't know about emscripten
-    cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_mixer.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
     cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
 
@@ -111,7 +89,6 @@ function buildEmscripten
     generateSdl2ImagePc > $PREFIX_EMS/system/lib/pkgconfig/SDL2_image.pc
     generateOggPc > $PREFIX_EMS/system/lib/pkgconfig/ogg.pc
     generateVorbisfilePc > $PREFIX_EMS/system/lib/pkgconfig/vorbisfile.pc
-    cp $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc $PREFIX_EMS/system/lib/pkgconfig/SDL2_mixer.pc
   fi
 
   # the asmjs backend
