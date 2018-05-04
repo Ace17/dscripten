@@ -11,6 +11,24 @@ index c47eb8cd..8f76e2eb 100644
  
  #
  # Test and runtime targets. Note that enable_testing() is order-sensitive!
+@@ -876,17 +876,6 @@ if(MSVC)
+     install(DIRECTORY vcbuild/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.bat")
+ endif()
+ 
+-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+-    find_package(bash-completion QUIET)
+-    if(NOT BASH_COMPLETION_FOUND)
+-        set(BASH_COMPLETION_COMPLETIONSDIR "${CONF_INST_DIR}/bash_completion.d")
+-        if(LINUX_DISTRIBUTION_IS_GENTOO AND CMAKE_INSTALL_PREFIX STREQUAL "/usr")
+-            set(BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion")
+-        endif()
+-    endif()
+-    install(DIRECTORY bash_completion.d/ DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR})
+-endif()
+-
+ #
+ # Packaging
+ #
 diff --git a/driver/codegenerator.cpp b/driver/codegenerator.cpp
 index c326ed20..f7aae06f 100644
 --- a/driver/codegenerator.cpp
