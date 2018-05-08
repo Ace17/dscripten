@@ -17,11 +17,11 @@ readonly PREFIX_JS=$PREFIX/llvm-js
 readonly PREFIX_EMS=$PREFIX/emscripten
 readonly scriptDir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
-readonly MAKE="make -j`nproc`"
+readonly MAKE=(make -j"$(nproc)")
 
 function main
 {
-  mkdir -p $tmpDir
+  mkdir -p "$tmpDir"
 
   buildEmscripten
   buildLdc
@@ -40,7 +40,7 @@ function configureEmcc
 {
   # will create $HOME/.emscripten
   PATH=$PREFIX_JS/bin:$PATH \
-    $PREFIX_EMS/emcc --version
+    "$PREFIX_EMS"/emcc --version
 }
 
 function buildExtraLibs
@@ -52,25 +52,25 @@ function buildExtraLibs
 # - ldc D2 compiler (requires LLVM >= 3.5)
 function buildLdc
 {
-  if [ ! -d $tmpDir/ldc ] ; then
+  if [ ! -d "$tmpDir"/ldc ] ; then
     echo "Cloning LDC ..."
-    git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git $tmpDir/ldc
-    gitCheckout $tmpDir/ldc '9ff79e556a5e3d638d5f9109940e8e01dcd01f5a'
-    runFrom $tmpDir/ldc git submodule init
-    runFrom $tmpDir/ldc git submodule update
-    patch --merge -d $tmpDir/ldc -p1 -i $scriptDir/ldc.patch
+    git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git "$tmpDir"/ldc
+    gitCheckout "$tmpDir"/ldc '9ff79e556a5e3d638d5f9109940e8e01dcd01f5a'
+    runFrom "$tmpDir"/ldc git submodule init
+    runFrom "$tmpDir"/ldc git submodule update
+    patch --merge -d "$tmpDir"/ldc -p1 -i "$scriptDir"/ldc.patch
   fi
 
-  mkdir -p $tmpDir/bin/ldc
-  runFrom $tmpDir/bin/ldc cmake \
+  mkdir -p "$tmpDir"/bin/ldc
+  runFrom "$tmpDir"/bin/ldc cmake \
     -G "Unix Makefiles" \
     -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
     -D "LDC_DYNAMIC_COMPILE=OFF" \
     -D "LLVM_CONFIG=$PREFIX_JS/bin/llvm-config" \
     ../../ldc
-  runFrom $tmpDir/bin/ldc $MAKE -k || true
-  runFrom $tmpDir/bin/ldc make -j2 # retry with less parallelism (workaround potential memory limitations)
-  runFrom $tmpDir/bin/ldc $MAKE install
+  runFrom "$tmpDir"/bin/ldc "${MAKE[@]}" -k || true
+  runFrom "$tmpDir"/bin/ldc make -j2 # retry with less parallelism (workaround potential memory limitations)
+  runFrom "$tmpDir"/bin/ldc "${MAKE[@]}" install
 }
 
 # Here, we build and install:
@@ -80,39 +80,39 @@ function buildLdc
 function buildEmscripten
 {
   # emcc and other python wrappers
-  if [ ! -d $PREFIX_EMS ] ; then
+  if [ ! -d "$PREFIX_EMS" ] ; then
     echo "Cloning emscripten ..."
-    git clone -q --depth=1000 -b incoming --single-branch https://github.com/kripken/emscripten.git $PREFIX_EMS
-    gitCheckout $PREFIX_EMS '1.37.39'
+    git clone -q --depth=1000 -b incoming --single-branch https://github.com/kripken/emscripten.git "$PREFIX_EMS"
+    gitCheckout "$PREFIX_EMS" '1.37.39'
 
     # fake pkg-config files to keep happy the build systems of user projects, which don't know about emscripten
-    cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_image.pc
-    cp $PREFIX_EMS/system/lib/pkgconfig/sdl.pc $PREFIX_EMS/system/lib/pkgconfig/SDL_gfx.pc
+    cp "$PREFIX_EMS"/system/lib/pkgconfig/sdl.pc "$PREFIX_EMS"/system/lib/pkgconfig/SDL_image.pc
+    cp "$PREFIX_EMS"/system/lib/pkgconfig/sdl.pc "$PREFIX_EMS"/system/lib/pkgconfig/SDL_gfx.pc
 
-    generateGlPc > $PREFIX_EMS/system/lib/pkgconfig/gl.pc
-    generateSdl2Pc > $PREFIX_EMS/system/lib/pkgconfig/sdl2.pc
-    generateSdl2ImagePc > $PREFIX_EMS/system/lib/pkgconfig/SDL2_image.pc
-    generateOggPc > $PREFIX_EMS/system/lib/pkgconfig/ogg.pc
-    generateVorbisfilePc > $PREFIX_EMS/system/lib/pkgconfig/vorbisfile.pc
+    generateGlPc > "$PREFIX_EMS"/system/lib/pkgconfig/gl.pc
+    generateSdl2Pc > "$PREFIX_EMS"/system/lib/pkgconfig/sdl2.pc
+    generateSdl2ImagePc > "$PREFIX_EMS"/system/lib/pkgconfig/SDL2_image.pc
+    generateOggPc > "$PREFIX_EMS"/system/lib/pkgconfig/ogg.pc
+    generateVorbisfilePc > "$PREFIX_EMS"/system/lib/pkgconfig/vorbisfile.pc
   fi
 
   # the asmjs backend
-  if [ ! -d $tmpDir/emscripten-llvm ] ; then
+  if [ ! -d "$tmpDir"/emscripten-llvm ] ; then
     echo "Cloning emscripten-fastcomp ..."
-    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git $tmpDir/emscripten-llvm
-    gitCheckout $tmpDir/emscripten-llvm '1.37.39'
+    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git "$tmpDir"/emscripten-llvm
+    gitCheckout "$tmpDir"/emscripten-llvm '1.37.39'
   fi
 
   # modified clang front-end (why the hell is it even necessary to modify the frontend?)
-  if [ ! -d $tmpDir/emscripten-llvm/tools/clang ] ; then
+  if [ ! -d "$tmpDir"/emscripten-llvm/tools/clang ] ; then
     echo "Cloning emscrikpten-fastcomp-clang ..."
-    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git $tmpDir/emscripten-llvm/tools/clang
-    gitCheckout $tmpDir/emscripten-llvm/tools/clang '1.37.39'
+    git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git "$tmpDir"/emscripten-llvm/tools/clang
+    gitCheckout "$tmpDir"/emscripten-llvm/tools/clang '1.37.39'
   fi
 
-  mkdir -p $tmpDir/bin/emscripten-llvm
+  mkdir -p "$tmpDir"/bin/emscripten-llvm
 
-  runFrom $tmpDir/bin/emscripten-llvm cmake \
+  runFrom "$tmpDir"/bin/emscripten-llvm cmake \
     -G "Unix Makefiles" \
     -D "CMAKE_INSTALL_PREFIX=$PREFIX_JS" \
     -D "CMAKE_BUILD_TYPE=Release" \
@@ -127,9 +127,9 @@ function buildEmscripten
     -D "CLANG_ENABLE_ARCMT=off" \
     ../../emscripten-llvm
 
-  runFrom $tmpDir/bin/emscripten-llvm $MAKE -k || true
-  runFrom $tmpDir/bin/emscripten-llvm make -j2 # retry with less parallelism (workaround potential memory limitations)
-  runFrom $tmpDir/bin/emscripten-llvm $MAKE install
+  runFrom "$tmpDir"/bin/emscripten-llvm "${MAKE[@]}" -k || true
+  runFrom "$tmpDir"/bin/emscripten-llvm make -j2 # retry with less parallelism (workaround potential memory limitations)
+  runFrom "$tmpDir"/bin/emscripten-llvm "${MAKE[@]}" install
 }
 
 function generateGlPc
@@ -182,8 +182,8 @@ function gitCheckout
   local dir=$1
   local commit=$2
 
-  runFrom $dir git fetch --depth 100
-  runFrom $dir git checkout -q "$commit"
+  runFrom "$dir" git fetch --depth 100
+  runFrom "$dir" git checkout -q "$commit"
   echo "[$dir] at $commit"
 }
 
