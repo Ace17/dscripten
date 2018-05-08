@@ -7,9 +7,14 @@
 
 set -euo pipefail
 
-readonly PREFIX_JS=/tmp/toolchains/llvm-js
-readonly PREFIX_EMS=/tmp/toolchains/emscripten
-readonly tmpDir=/tmp/dscripten-tmp
+readonly PREFIX=${PREFIX:-/tmp/toolchains}
+readonly tmpDir=${tmpDir:-/tmp/dscripten-tmp}
+
+echo "Using prefix: $PREFIX"
+echo "Using tmpDir: $tmpDir"
+
+readonly PREFIX_JS=$PREFIX/llvm-js
+readonly PREFIX_EMS=$PREFIX/emscripten
 readonly scriptDir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
 readonly MAKE="make -j`nproc`"
