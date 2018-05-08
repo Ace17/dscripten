@@ -23,10 +23,17 @@ Usage
 * Fetch and build the toolchains
 
   ```
-  $ ./fetch_toolchains
+  $ ./fetch_toolchain
   ```
 
   This will take some time, as it will build LLVM-fastcomp and a patched ldc2.
+  The result will be in the /tmp/toolchains directory.
+  Alternatively, it's possible to specify another installation prefix using
+  the 'PREFIX' environment variable.
+
+  It's also possible to specify another temporary directory using the 'tmpDir'
+  environment variable. Using a tmpfs (in-RAM directory) is recommended, as it
+  greatly speeds up the build.
 
 * Add some directories to your PATH
 
