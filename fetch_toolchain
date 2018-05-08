@@ -186,9 +186,10 @@ function runFrom
 {
   local readonly dir=$1
   shift
-  pushd $dir >/dev/null
-  "$@"
-  popd >/dev/null
+  (
+	cd "$dir"
+	"$@"
+  )
 }
 
 main "$@"
