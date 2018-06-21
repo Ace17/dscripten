@@ -105,7 +105,7 @@ function buildEmscripten
 
   # forked clang front-end
   if [ ! -d "$tmpDir"/emscripten-llvm/tools/clang ] ; then
-    echo "Cloning emscrikpten-fastcomp-clang ..."
+    echo "Cloning emscripten-fastcomp-clang ..."
     git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git "$tmpDir"/emscripten-llvm/tools/clang
     gitCheckout "$tmpDir"/emscripten-llvm/tools/clang '1.37.39'
   fi
