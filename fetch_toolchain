@@ -23,6 +23,13 @@ function main
 {
   mkdir -p "$tmpDir"
 
+  ensureTool make
+  ensureTool cmake
+  ensureTool pkg-config
+  ensureTool patch
+  ensureTool git
+  ensureTool dmd # ldc requires this
+
   buildEmscripten
   buildLdc
 
@@ -34,6 +41,17 @@ function main
   echo ""
   echo "================================================================"
   echo "Success. Your asmjs toolchain is now ready."
+}
+
+function ensureTool
+{
+  local progName=$1
+  echo -n "Checking for $progName ... "
+  if ! which $progName 1>/dev/null 2>/dev/null; then
+    echo "Can't find '$progName' in PATH. Aborting."
+    return 1
+  fi
+  echo "OK"
 }
 
 function configureEmcc
