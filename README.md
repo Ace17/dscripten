@@ -90,3 +90,16 @@ Usage
   $ ./bin/native/full.exe
   ```
 
+License
+=======
+
+* The build scripts and demo game source files are licensed under the GNU Affero GPL.
+  In short: you're free to run them for whatever purpose, but if you put them
+  on a server and provide them as a service, you must ensure your users have
+  access to the source code, under the same license.
+
+* Everything under the '/rt' directory is licensed under the permissive Boost
+  software license.
+  Indeed, some parts of 'rt' get integrated to the produced asm.js binaries,
+  for which I don't want to impose any restriction.
+
