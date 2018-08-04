@@ -87,6 +87,11 @@ class Object
   }
 }
 
+bool _xopEquals(in void*, in void*)
+{
+    throw new Error("TypeInfo.equals is not implemented");
+}
+
 /**
  * Information about an interface.
  * When an object is accessed via an interface, an Interface* appears as the
@@ -1046,7 +1051,6 @@ struct ModuleInfo
   else
   {
     @disable this();
-    @disable this(this) const;
   }
 
 const:

@@ -73,7 +73,7 @@ function buildLdc
   if [ ! -d "$tmpDir"/ldc ] ; then
     echo "Cloning LDC ..."
     git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git "$tmpDir"/ldc
-    gitCheckout "$tmpDir"/ldc '9ff79e556a5e3d638d5f9109940e8e01dcd01f5a'
+    gitCheckout "$tmpDir"/ldc '9c8c2d5e55fed43e000e2115cde76e787f51b113'
     runFrom "$tmpDir"/ldc git submodule init
     runFrom "$tmpDir"/ldc git submodule update
     patch --merge -d "$tmpDir"/ldc -p1 -i "$scriptDir"/ldc.patch
@@ -101,7 +101,7 @@ function buildEmscripten
   if [ ! -d "$PREFIX_EMS" ] ; then
     echo "Cloning emscripten ..."
     git clone -q --depth=1000 -b incoming --single-branch https://github.com/kripken/emscripten.git "$PREFIX_EMS"
-    gitCheckout "$PREFIX_EMS" '1.37.39'
+    gitCheckout "$PREFIX_EMS" '1.38.11'
 
     # fake pkg-config files to keep happy the build systems of user projects, which don't know about emscripten
     cp "$PREFIX_EMS"/system/lib/pkgconfig/sdl.pc "$PREFIX_EMS"/system/lib/pkgconfig/SDL_image.pc
@@ -118,14 +118,14 @@ function buildEmscripten
   if [ ! -d "$tmpDir"/emscripten-llvm ] ; then
     echo "Cloning emscripten-fastcomp ..."
     git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp.git "$tmpDir"/emscripten-llvm
-    gitCheckout "$tmpDir"/emscripten-llvm '1.37.39'
+    gitCheckout "$tmpDir"/emscripten-llvm '1.38.11'
   fi
 
   # forked clang front-end
   if [ ! -d "$tmpDir"/emscripten-llvm/tools/clang ] ; then
     echo "Cloning emscripten-fastcomp-clang ..."
     git clone -q --depth=100 -b incoming --single-branch https://github.com/kripken/emscripten-fastcomp-clang.git "$tmpDir"/emscripten-llvm/tools/clang
-    gitCheckout "$tmpDir"/emscripten-llvm/tools/clang '1.37.39'
+    gitCheckout "$tmpDir"/emscripten-llvm/tools/clang '1.38.11'
   fi
 
   mkdir -p "$tmpDir"/bin/emscripten-llvm
