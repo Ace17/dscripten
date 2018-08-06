@@ -63,6 +63,15 @@ function configureEmcc
 
 function buildExtraLibs
 {
+  # This causes the emscripten ports to be built
+  echo "int main() { return 0; }" > $tmpDir/simple.cpp
+  emcc $tmpDir/simple.cpp \
+    -s USE_SDL=2\
+    -s USE_OGG=1\
+    -s USE_VORBIS=1\
+    -s USE_SDL_IMAGE=2\
+    -o $tmpDir/simple.html
+
   echo "All extra libs OK"
 }
 
