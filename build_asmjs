@@ -8,6 +8,7 @@ export LINK="emcc"
 TARGET="asmjs-unknown-emscripten"
 export CFLAGS="--target=$TARGET -S "
 export DFLAGS="-Iapi/ems -mtriple=$TARGET "
+export LDFLAGS="-s WASM=0"
 
 make -j`nproc` "DFLAGS=$DFLAGS" "$@"
 
