@@ -80,14 +80,14 @@ Usage
 * Enjoy the result:
 
   ```
-  $ firefox bin/asmjs/full.html
+  $ firefox bin/asmjs/game.html
   ```
 
 * You can also play the native version:
 
   ```
   $ ./build_native
-  $ ./bin/native/full.exe
+  $ ./bin/native/game.exe
   ```
 
 License
