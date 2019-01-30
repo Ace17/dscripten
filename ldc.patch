@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c47d5b64..54235e10 100644
+index 1bf26399..fbf1b18d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -883,7 +883,7 @@ add_subdirectory(utils)
+@@ -881,7 +881,7 @@ add_subdirectory(utils)
  #
  # Auxiliary tools.
  #
@@ -11,31 +11,20 @@ index c47d5b64..54235e10 100644
  
  #
  # Test and runtime targets. Note that enable_testing() is order-sensitive!
-@@ -941,19 +941,6 @@ if(MSVC)
+@@ -946,7 +946,7 @@ if(MSVC)
      install(DIRECTORY vcbuild/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.bat")
  endif()
  
 -if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
--    if(NOT DEFINED BASH_COMPLETION_COMPLETIONSDIR)
--        find_package(bash-completion QUIET)
--        if((NOT BASH_COMPLETION_FOUND) OR (NOT BASH_COMPLETION_PREFIX STREQUAL CMAKE_INSTALL_PREFIX))
--            set(BASH_COMPLETION_COMPLETIONSDIR "${CONF_INST_DIR}/bash_completion.d")
--            if(LINUX_DISTRIBUTION_IS_GENTOO AND CMAKE_INSTALL_PREFIX STREQUAL "/usr")
--                set(BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion")
--            endif()
--        endif()
--    endif()
--    install(DIRECTORY bash_completion.d/ DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR})
--endif()
--
- #
- # Packaging
- #
++if(${CMAKE_SYSTEM_NAME} MATCHES "Don't install completion: installation is flaky and we don't use this anyway")
+     if(NOT DEFINED BASH_COMPLETION_COMPLETIONSDIR)
+         find_package(bash-completion QUIET)
+         if((NOT BASH_COMPLETION_FOUND) OR (NOT BASH_COMPLETION_PREFIX STREQUAL CMAKE_INSTALL_PREFIX))
 diff --git a/driver/main.cpp b/driver/main.cpp
-index aeec5d60..485d4379 100644
+index 459ed019..63446a5b 100644
 --- a/driver/main.cpp
 +++ b/driver/main.cpp
-@@ -124,7 +124,7 @@ void printVersion(llvm::raw_ostream &OS) {
+@@ -125,7 +125,7 @@ void printVersion(llvm::raw_ostream &OS) {
    OS.flush();
  
    llvm::TargetRegistry::printRegisteredTargetsForVersion(
@@ -44,7 +33,7 @@ index aeec5d60..485d4379 100644
        OS
  #endif
    );
-@@ -312,7 +312,7 @@ void parseCommandLine(int argc, char **argv, Strings &sourceFiles,
+@@ -333,7 +333,7 @@ void parseCommandLine(int argc, char **argv, Strings &sourceFiles,
    // finalize by expanding response files specified in config file
    expandResponseFiles(allocator, allArguments);
  
@@ -53,7 +42,7 @@ index aeec5d60..485d4379 100644
    cl::SetVersionPrinter(&printVersion);
  #else
    cl::SetVersionPrinter(&printVersionStdout);
-@@ -731,6 +731,8 @@ void registerPredefinedTargetVersions() {
+@@ -757,6 +757,8 @@ void registerPredefinedTargetVersions() {
      VersionCondition::addPredefinedGlobalIdent("NVPTX");
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
      break;
@@ -62,7 +51,7 @@ index aeec5d60..485d4379 100644
    case llvm::Triple::nvptx64:
      VersionCondition::addPredefinedGlobalIdent("NVPTX64");
      VersionCondition::addPredefinedGlobalIdent("D_HardFloat");
-@@ -842,6 +844,8 @@ void registerPredefinedTargetVersions() {
+@@ -874,6 +876,8 @@ void registerPredefinedTargetVersions() {
      VersionCondition::addPredefinedGlobalIdent("NetBSD");
      VersionCondition::addPredefinedGlobalIdent("Posix");
      break;

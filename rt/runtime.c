@@ -44,5 +44,11 @@ int _D10TypeInfo_v6__initZ;
 int _D10TypeInfo_m6__initZ;
 int _D11TypeInfo_Ai6__initZ;
 void _d_throw_exception() { NOT_IMPLEMENTED; }
+
 ///////////////////////////////////////////////////////////////////////////////
+
+size_t _d_arraycast_len(size_t elementCount, size_t srcElementSize, size_t dstElementSize)
+{
+  return (elementCount * srcElementSize) / dstElementSize;
+}
 

@@ -82,7 +82,7 @@ function buildLdc
   if [ ! -d "$tmpDir"/ldc ] ; then
     echo "Cloning LDC ..."
     git clone -b master --single-branch --recursive https://github.com/ldc-developers/ldc.git "$tmpDir"/ldc
-    gitCheckout "$tmpDir"/ldc '9c8c2d5e55fed43e000e2115cde76e787f51b113'
+    gitCheckout "$tmpDir/ldc" '187d8198e63564c633f22f2ef4db2a31a8a600ce'
     runFrom "$tmpDir"/ldc git submodule init
     runFrom "$tmpDir"/ldc git submodule update
     patch --merge -d "$tmpDir"/ldc -p1 -i "$scriptDir"/ldc.patch
